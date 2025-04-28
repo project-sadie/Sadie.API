@@ -1,6 +1,6 @@
 using Sadie.Enums.Game.Players;
 
-namespace Sadie.API;
+namespace Sadie.API.Game.Players.Friendships;
 
 public interface IPlayerFriendshipUpdate
 {

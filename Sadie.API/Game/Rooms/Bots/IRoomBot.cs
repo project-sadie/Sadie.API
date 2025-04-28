@@ -1,5 +1,5 @@
 using Sadie.API.Game.Rooms.Unit;
-using Sadie.Database.Models.Players;
+using Sadie.Db.Models.Players;
 
 namespace Sadie.API.Game.Rooms.Bots;
 

@@ -1,6 +1,7 @@
+using Sadie.API.Game.Players.Friendships;
 using Sadie.API.Game.Players.Packets.Writers;
-using Sadie.Database.Models.Players;
-using Sadie.Database.Models.Players.Furniture;
+using Sadie.Db.Models.Players;
+using Sadie.Db.Models.Players.Furniture;
 
 namespace Sadie.API.Game.Players;
 

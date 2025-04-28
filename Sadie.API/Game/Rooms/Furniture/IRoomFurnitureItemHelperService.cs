@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Sadie.Database;
-using Sadie.Database.Models.Players.Furniture;
+using Sadie.Db;
+using Sadie.Db.Models.Players.Furniture;
 using Sadie.Enums.Unsorted;
 
 namespace Sadie.API.Game.Rooms.Furniture;

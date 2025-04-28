@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Drawing;
 using Sadie.API.Game.Rooms.Unit;
-using Sadie.Database.Models.Players.Furniture;
+using Sadie.Db.Models.Players.Furniture;
 
 namespace Sadie.API.Game.Rooms.Mapping;
 

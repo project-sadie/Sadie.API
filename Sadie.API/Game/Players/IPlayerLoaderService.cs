@@ -1,4 +1,4 @@
-using Sadie.Database.Models.Players;
+using Sadie.Db.Models.Players;
 
 namespace Sadie.API.Game.Players;
 

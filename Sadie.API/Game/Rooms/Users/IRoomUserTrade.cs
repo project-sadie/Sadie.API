@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Sadie.API.Networking;
-using Sadie.Database;
-using Sadie.Database.Models.Players.Furniture;
+using Sadie.Db;
+using Sadie.Db.Models.Players.Furniture;
 
 namespace Sadie.API.Game.Rooms.Users;
 

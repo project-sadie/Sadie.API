@@ -1,8 +1,8 @@
-using Sadie.Database.Models.Furniture;
-using Sadie.Database.Models.Players;
-using Sadie.Database.Models.Players.Furniture;
+using Sadie.Db.Models.Furniture;
+using Sadie.Db.Models.Players;
+using Sadie.Db.Models.Players.Furniture;
 
-namespace Sadie.API;
+namespace Sadie.API.Game.Players;
 
 public interface IPlayerFurnitureItem
 {

@@ -1,7 +1,7 @@
 using Sadie.API.Game.Rooms.Bots;
 using Sadie.API.Game.Rooms.Mapping;
 using Sadie.API.Game.Rooms.Users;
-using Sadie.Database.Models.Rooms;
+using Sadie.Db.Models.Rooms;
 
 namespace Sadie.API.Game.Rooms;
 
