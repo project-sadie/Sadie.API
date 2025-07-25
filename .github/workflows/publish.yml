@@ -86,7 +86,9 @@ jobs:
         git commit -m "chore: bump AssemblyVersion [skip ci]"
         git push origin $branchName
 
-        gh pr create --title "chore: bump AssemblyVersion" --body "Auto version bump" --base main --head $branchName --label "auto-merge"
+        gh pr create --title "chore: bump AssemblyVersion" --body "Auto version bump" --base main --head $branchName
+
+        Start-Sleep -Seconds 10
 
         $prNumber = gh pr list --head $branchName --json number --jq '.[0].number'
 
