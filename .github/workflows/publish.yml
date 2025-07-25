@@ -4,104 +4,67 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-name: Publish
-
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
 
 permissions:
   contents: write
-  packages: write
+  pull-requests: write
+
+env:
+  PROJECT_FILE: ./Sadie.API/Sadie.API.csproj
 
 jobs:
-  bump-version:
+  version-bump:
+    name: Bump version
     runs-on: ubuntu-latest
-    outputs:
-      new_version: ${{ steps.version.outputs.new }}
-      old_version: ${{ steps.version.outputs.old }}
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
 
-      - name: Detect and bump version
-        id: version
+      - name: Get current version
+        id: get_version
         run: |
-          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName -Raw
-          $pattern = '<Version>(?<version>.*?)</Version>'
-          
-          if ($content -notmatch $pattern) {
-            throw "No <Version> found."
-          }
+          version=$(grep -oPm1 "(?<=<Version>)[^<]+" "$PROJECT_FILE")
+          echo "Current version: $version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
-          $old = $matches.version
-          $parts = $old -split '\.'
-          $parts[2] = [int]$parts[2] + 1
-          $new = "$($parts[0]).$($parts[1]).$($parts[2])"
-
-          $newContent = [regex]::Replace($content, $pattern, "<Version>$new</Version>")
-          Set-Content $csproj.FullName -Value $newContent
-
-          echo "old=$old" >> $env:GITHUB_OUTPUT
-          echo "new=$new" >> $env:GITHUB_OUTPUT
-          echo "file=$($csproj.FullName)" >> $env:GITHUB_OUTPUT
-        shell: pwsh
+      - name: Bump patch version
+        id: bump
+        run: |
+          old_version="${{ steps.get_version.outputs.version }}"
+          IFS='.' read -r major minor patch <<< "$old_version"
+          new_patch=$((patch + 1))
+          new_version="$major.$minor.$new_patch"
+          echo "Bumped version: $new_version"
+          sed -i "s/<Version>.*<\/Version>/<Version>$new_version<\/Version>/" "$PROJECT_FILE"
+          echo "old=$old_version" >> $GITHUB_OUTPUT
+          echo "new=$new_version" >> $GITHUB_OUTPUT
 
       - name: Commit and push changes
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          git checkout -b "version-bump-v${{ steps.version.outputs.new }}"
-          git add "${{ steps.version.outputs.file }}"
-          git commit -m "chore: bump version to v${{ steps.version.outputs.new }}"
-
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git
-          git push origin "version-bump-v${{ steps.version.outputs.new }}"
-
-  create-tag:
-    needs: bump-version
-    runs-on: ubuntu-latest
-    if: ${{ needs.bump-version.outputs.new_version != '' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Create tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "v${{ needs.bump-version.outputs.new_version }}"
-          git push origin "v${{ needs.bump-version.outputs.new_version }}"
 
-  create-release:
-    needs: [bump-version, create-tag]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create release
-        uses: softprops/action-gh-release@v1
+          git checkout -b "version-bump-v${{ steps.bump.outputs.new }}"
+          git add "$PROJECT_FILE"
+          git commit -m "chore: bump version to v${{ steps.bump.outputs.new }}"
+          git push --set-upstream https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} HEAD
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
         with:
-          tag_name: v${{ needs.bump-version.outputs.new_version }}
-          name: v${{ needs.bump-version.outputs.new_version }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          commit-message: chore: bump version to v${{ steps.bump.outputs.new }}
+          title: Bump version to v${{ steps.bump.outputs.new }}
           body: |
-            Automated version bump after merge to main.
+            Automated version bump after merge to `main`.
 
-            **Old version:** v${{ needs.bump-version.outputs.old_version }}
-            **New version:** v${{ needs.bump-version.outputs.new_version }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            **Old version:** v${{ steps.bump.outputs.old }}
+            **New version:** v${{ steps.bump.outputs.new }}
+          branch: version-bump-v${{ steps.bump.outputs.new }}
+          base: main
 
