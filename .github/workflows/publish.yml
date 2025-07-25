@@ -54,6 +54,14 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
+      - name: Check for automated commit
+        run: |
+          $lastCommit = git log -1 --pretty=%B
+          if ($lastCommit -like "*auto: bump version*") {
+            Write-Host "Automated bump commit detected. Skipping deploy."
+            exit 0
+          }
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -75,30 +83,51 @@ jobs:
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
             $patch = [int]$matches[3] + 1
+
+            if ($patch -gt 99) {
+              $patch = 0
+              $minor++
+            }
+
+            if ($minor -gt 99) {
+              $minor = 0
+              $major++
+            }
+
             $newVersion = "$major.$minor.$patch"
             $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
-            Set-Content -Path $csproj.FullName -Value $newContent
+
+            if ($newContent -ne $content) {
+              Set-Content -Path $csproj.FullName -Value $newContent
+              git add *.csproj
+              git commit -m "auto: bump version [skip ci]"
+              git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
+            } else {
+              Write-Host "No version change detected, skipping."
+              exit 0
+            }
           } else {
             Write-Error "No <Version> tag found in $($csproj.FullName)"
             exit 1
           }
-
-      - name: Commit and push version bump
-        run: |
-          git add *.csproj
-          git commit -m "auto: bump version [skip ci]"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
 
       - name: Create and auto‑merge PR from develop to main
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
+          $existingPR = gh pr list --base main --head develop --json number --jq '.[0].number'
+          if ($existingPR) {
+            Write-Host "PR from develop to main already exists. Skipping."
+            exit 0
+          }
+
           $pr_url = gh pr create `
             --title "bump version" `
             --body "version bump after merge to main." `
             --base main `
             --head develop
+
           Write-Output "PR created: $pr_url"
           $pr_number = ($pr_url -split "/")[-1]
           gh pr merge $pr_number --auto --merge
@@ -126,5 +155,4 @@ jobs:
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
           }
-
 
