@@ -45,7 +45,7 @@ jobs:
           path: ${{ env.NuGetDirectory }}/*.nupkg
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: package
     runs-on: ubuntu-latest
     steps:
@@ -58,14 +58,13 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
-          
-     - name: Create and checkout develop branch
-       run: |
-         git config user.name "github-actions"
-         git config user.email "github-actions@github.com"
 
-         git fetch origin master
-         git checkout -b develop origin/master
+      - name: Create and checkout develop branch
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git fetch origin master
+          git checkout -b develop origin/master
 
       - name: Bump <Version> in .csproj
         run: |
@@ -120,3 +119,4 @@ jobs:
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
           }
+
