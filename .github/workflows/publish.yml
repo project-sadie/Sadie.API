@@ -5,76 +5,66 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
-  bump-and-publish:
+  bump-version:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '8.0.x'
 
       - name: Bump <Version> in .csproj
-        id: bump_version
         shell: pwsh
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $lines = Get-Content $csproj.FullName
-          $newLines = @()
-          $versionFound = $false
+          $content = Get-Content $csproj.FullName -Raw
 
-          foreach ($line in $lines) {
-            if ($line -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
-              $major = [int]$matches[1]
-              $minor = [int]$matches[2]
-              $patch = [int]$matches[3] + 1
-              $newVersion = "$major.$minor.$patch"
-              $newLine = "<Version>$newVersion</Version>"
-              $newLines += $newLine
-              $versionFound = $true
-              echo "new_version=$newVersion" >> $env:GITHUB_ENV
-              echo "version_bumped=true" >> $env:GITHUB_ENV
-            } else {
-              $newLines += $line
-            }
+          if ($content -notmatch '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
+              Write-Error "No <Version> tag found."
+              exit 1
           }
 
-          if (-not $versionFound) {
-            echo "No <Version> tag found."
-            echo "version_bumped=false" >> $env:GITHUB_ENV
-            exit 0
-          }
+          $major = [int]$matches[1]
+          $minor = [int]$matches[2]
+          $patch = [int]$matches[3]
+          $newPatch = $patch + 1
+          $newVersion = "$major.$minor.$newPatch"
 
-          Set-Content -Path $csproj.FullName -Value $newLines
+          Write-Host "Old version: $major.$minor.$patch"
+          Write-Host "New version: $newVersion"
+
+          $newContent = $content -replace "<Version>$major\.$minor\.$patch</Version>", "<Version>$newVersion</Version>"
+          Set-Content $csproj.FullName $newContent
 
       - name: Commit and push changes
-        if: env.version_bumped == 'true'
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b version-bump-v${{ env.new_version }}
-          git add *.csproj
-          git commit -m "chore: bump version to v${{ env.new_version }}"
-          git push origin version-bump-v${{ env.new_version }}
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "version-bump-v$major.$minor.$newPatch"
+          git add .
+          git commit -m "chore: bump version to v$newVersion"
+          git push origin "version-bump-v$major.$minor.$newPatch"
 
       - name: Create pull request
-        if: env.version_bumped == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
-          title: "🔖 Version bump to v${{ env.new_version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "Bump version to v${{ env.newVersion }}"
           body: |
-            Automated version bump after merge to `main`.
+            Automated version bump after merge to main.
 
-            **New version:** `v${{ env.new_version }}`
+            **Old version**: v${{ env.major }}.${{ env.minor }}.${{ env.patch }}
+            **New version**: v${{ env.newVersion }}
           base: main
-          branch: version-bump-v${{ env.new_version }}
+          branch: version-bump-v${{ env.newVersion }}
 
