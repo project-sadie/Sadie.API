@@ -59,30 +59,42 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Bump AssemblyVersion
+      - name: Bump <Version> in .csproj
+        id: bump_version
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           Write-Output "Updating version in: $($csproj.FullName)"
-          $content = Get-Content $csproj.FullName
-          $pattern = '<AssemblyVersion>(\d+)\.(\d+)\.(\d+)\.(\d+)</AssemblyVersion>'
-          $newContent = $content -replace $pattern, {
-            $major = [int]$matches[1]
-            $minor = [int]$matches[2]
-            $build = [int]$matches[3]
-            $rev = [int]$matches[4] + 1
-            "<AssemblyVersion>$major.$minor.$build.$rev</AssemblyVersion>"
+
+          $lines = Get-Content $csproj.FullName
+          $oldVersion = ''
+          $newVersion = ''
+
+          for ($i = 0; $i -lt $lines.Length; $i++) {
+            if ($lines[$i] -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
+              $major = [int]$matches[1]
+              $minor = [int]$matches[2]
+              $patch = [int]$matches[3]
+              $oldVersion = "$major.$minor.$patch"
+              $patch++
+              $newVersion = "$major.$minor.$patch"
+              $lines[$i] = $lines[$i] -replace $matches[0], "<Version>$newVersion</Version>"
+              break
+            }
           }
-          Set-Content -Path $csproj.FullName -Value $newContent
+
+          [System.IO.File]::WriteAllLines($csproj.FullName, $lines)
+          echo "oldVersion=$oldVersion" >> $env:GITHUB_ENV
+          echo "newVersion=$newVersion" >> $env:GITHUB_ENV
 
       - name: Commit and push version bump
         id: commit_push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          $branchName = "bump-assemblyversion-$(Get-Date -Format 'yyyyMMddHHmmss')"
+          $branchName = "v-bump-$(Get-Date -Format 'yyyyMMddHHmmss')"
           git checkout -b $branchName
           git add *.csproj
-          git commit -m "chore: bump AssemblyVersion [skip ci]"
+          git commit -m "auto: bump Version to v${{ env.newVersion }} [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
           echo "branchName=$branchName" >> $env:GITHUB_ENV
 
@@ -92,8 +104,11 @@ jobs:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           gh pr create \
-            --title "chore: bump AssemblyVersion" \
-            --body "Automated version bump after merge to main." \
+            --title "chore: bump Version to v${{ env.newVersion }}" \
+            --body "Automated version bump after merge to main.
+
+**Old version:** v${{ env.oldVersion }}
+**New version:** v${{ env.newVersion }}" \
             --base main \
             --head "${branchName}"
 
