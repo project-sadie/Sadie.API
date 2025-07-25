@@ -7,7 +7,7 @@ on:
       - 'main'
   pull_request:
     branches:
-      - '*'
+      - 'main'
   release:
     types:
       - published
@@ -59,52 +59,53 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      - name: Bump <Version>
-        id: bump_version
+      - name: Create and checkout develop branch
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git fetch origin main
+          git checkout -b develop origin/main
+
+      - name: Bump <Version> in .csproj
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           $content = Get-Content $csproj.FullName -Raw
           $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-          if ($content -notmatch $pattern) {
-            throw "No <Version> found."
+          if ($content -match $pattern) {
+            $major = [int]$matches[1]
+            $minor = [int]$matches[2]
+            $patch = [int]$matches[3] + 1
+            $newVersion = "$major.$minor.$patch"
+            $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
+            Set-Content -Path $csproj.FullName -Value $newContent
+          } else {
+            Write-Error "No <Version> tag found in $($csproj.FullName)"
+            exit 1
           }
-          $major = [int]$matches[1]
-          $minor = [int]$matches[2]
-          $patch = [int]$matches[3] + 1
-          $oldVersion = "$major.$minor.$patch"
-          $newVersion = "$major.$minor.$patch"
-          $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
-          Set-Content -Path $csproj.FullName -Value $newContent
-          Write-Output "Old version: $oldVersion"
-          Write-Output "New version: $newVersion"
-          "NEW_VERSION=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Commit and push version bump
-        id: commit_push
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          $branchName = "v-bump-$(Get-Date -Format 'yyyyMMddHHmmss')"
-          git checkout -b $branchName
           git add *.csproj
-          git commit -m "chore: bump version to $env:NEW_VERSION [skip ci]"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
-          "branchName=$branchName" | Out-File -FilePath $env:GITHUB_ENV -Append
+          git commit -m "auto: bump version [skip ci]"
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
 
-      - name: Create Pull Request
-        shell: bash
+      - name: Create and auto‑merge PR from develop to main
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          gh pr create \
-            --title "chore: bump version to v${NEW_VERSION}" \
-            --body "Automated version bump after merge to main.\n\n**Old version:** v${OLD_VERSION}\n**New version:** v${NEW_VERSION}" \
-            --base main \
-            --head "${branchName}"
+          $pr_url = gh pr create `
+            --title "bump version" `
+            --body "version bump after merge to main." `
+            --base main `
+            --head develop
+          Write-Output "PR created: $pr_url"
+          $pr_number = ($pr_url -split "/")[-1]
+          gh pr merge $pr_number --auto --merge
 
   publish:
     needs: deploy
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
