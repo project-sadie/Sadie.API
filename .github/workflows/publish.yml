@@ -1,128 +1,79 @@
-name: publish
+name: Publish
 
 on:
-  workflow_dispatch:
   push:
     branches:
-      - 'main'
-  pull_request:
-    branches:
-      - '*'
-  release:
-    types:
-      - published
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_NOLOGO: true
-  NuGetDirectory: ${{ github.workspace }}/nuget
-
-defaults:
-  run:
-    shell: pwsh
+      - main
 
 jobs:
-  package:
+  bump-version:
+    name: Bump Version
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-
-      - run: dotnet pack --configuration Release --output ${{ env.NuGetDirectory }}
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: nuget
-          if-no-files-found: error
-          retention-days: 7
-          path: ${{ env.NuGetDirectory }}/*.nupkg
-
-  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: package
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Bump <Version>
-        id: bump_version
+      - name: Setup Git
         run: |
-          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName -Raw
-          $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-          if ($content -notmatch $pattern) {
-            throw "No <Version> found."
-          }
-          $major = [int]$matches[1]
-          $minor = [int]$matches[2]
-          $patch = [int]$matches[3] + 1
-          $oldVersion = "$major.$minor.$patch"
-          $newVersion = "$major.$minor.$patch"
-          $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
-          Set-Content -Path $csproj.FullName -Value $newContent
-          Write-Output "Old version: $oldVersion"
-          Write-Output "New version: $newVersion"
-          "NEW_VERSION=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit and push version bump
-        id: commit_push
+      - name: Get .csproj file
+        id: csproj
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          $branchName = "v-bump-$(Get-Date -Format 'yyyyMMddHHmmss')"
-          git checkout -b $branchName
-          git add *.csproj
-          git commit -m "chore: bump version to $env:NEW_VERSION [skip ci]"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
-          "branchName=$branchName" | Out-File -FilePath $env:GITHUB_ENV -Append
+          FILE=$(find . -name "*.csproj" | head -n 1)
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+
+      - name: Extract and bump version
+        id: version
+        run: |
+          FILE="${{ steps.csproj.outputs.file }}"
+          echo "Using $FILE"
+          OLD_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$FILE")
+          echo "Old version: $OLD_VERSION"
+
+          IFS='.' read -r major minor patch <<< "$OLD_VERSION"
+          NEW_VERSION="$major.$minor.$((patch + 1))"
+          echo "New version: $NEW_VERSION"
+
+          sed -i "s|<Version>$OLD_VERSION</Version>|<Version>$NEW_VERSION</Version>|" "$FILE"
+
+          echo "old=$OLD_VERSION" >> $GITHUB_OUTPUT
+          echo "new=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "branch=version-bump-${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Commit changes
+        run: |
+          git checkout -b ${{ steps.version.outputs.branch }}
+          git add "${{ steps.csproj.outputs.file }}"
+          git commit -m "chore: bump version to v${{ steps.version.outputs.new }}"
+          git push origin ${{ steps.version.outputs.branch }}
 
       - name: Create Pull Request
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
+          PR_BODY=$(cat <<EOF
+Automated version bump after merge to main.
+
+**Old version:** v${{ steps.version.outputs.old }}
+**New version:** v${{ steps.version.outputs.new }}
+EOF
+)
           gh pr create \
-            --title "chore: bump version to v${NEW_VERSION}" \
-            --body "Automated version bump after merge to main.\n\n**Old version:** v${OLD_VERSION}\n**New version:** v${NEW_VERSION}" \
+            --title "chore: bump version to v${{ steps.version.outputs.new }}" \
+            --body "$PR_BODY" \
             --base main \
-            --head "${branchName}"
+            --head "${{ steps.version.outputs.branch }}"
 
-  publish:
-    needs: deploy
-    if: github.event_name == 'release' && github.event.action == 'published'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: nuget
-          path: ${{ env.NuGetDirectory }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Publish NuGet package
+      - name: Create Git tag
+        if: success()
         run: |
-          foreach ($file in Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg) {
-            dotnet nuget push $file `
-              --api-key "${{ secrets.NUGET_APIKEY }}" `
-              --source https://api.nuget.org/v3/index.json `
-              --skip-duplicate
-          }
+          git tag "v${{ steps.version.outputs.new }}"
+          git push origin "v${{ steps.version.outputs.new }}"
 
