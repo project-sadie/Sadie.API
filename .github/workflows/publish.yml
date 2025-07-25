@@ -74,5 +74,30 @@ jobs:
             $minor = [int]$matches[2]
             $patch = [int]$matches[3] + 1
             $newVersion = "$major.$minor.$patch"
-            $newContent = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$newVersi
+            $newContent = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$newVersion</Version>"
+            Set-Content -Path $csproj.FullName -Value $newContent
+          } else {
+            Write-Error "Could not find <Version> tag in $($csproj.FullName)"
+            exit 1
+          }
+
+      - name: Commit and push version bump
+        run: |
+          git add *.csproj
+          git commit -m "auto: bump version [skip ci]"
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
+
+      - name: Create Pull Request from develop to master
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          gh pr create \
+            --title "chore: bump version" \
+            --body "Automated version bump after merge to main.\n\nThis PR updates the <Version> tag in the .csproj file." \
+            --base master \
+            --head develop
+
+  publish:
+    needs: deploy
+    if: github.event_name == 'release' && github.event_
 
