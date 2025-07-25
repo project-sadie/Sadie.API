@@ -90,11 +90,11 @@ jobs:
           git commit -m "auto: bump version [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
 
-      - name: Create Pull Request from develop to main
+      - name: Create and auto-merge Pull Request from develop to main
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          gh pr create --title "chore: bump version" --body "Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file." --base main --head develop
+          gh pr create --title "chore: bump version" --body 'Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file.' --base main --head develop
           gh pr merge --auto --merge --repo "${{ github.repository }}" --head develop
 
   publish:
