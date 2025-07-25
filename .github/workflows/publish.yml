@@ -68,53 +68,11 @@ jobs:
       - name: Bump <Version> in .csproj
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName
-          $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-          $newContent = $content -replace $pattern, {
+          $content = Get-Content $csproj.FullName -Raw
+          if ($content -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
             $patch = [int]$matches[3] + 1
-            "<Version>$major.$minor.$patch</Version>"
-          }
-          Set-Content -Path $csproj.FullName -Value $newContent
-
-      - name: Commit and push version bump
-        run: |
-          git add *.csproj
-          git commit -m "auto: bump version [skip ci]"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
-
-      - name: Create Pull Request from develop to master
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          gh pr create \
-            --title "chore: bump version" \
-            --body "Automated version bump after merge to main.\n\nThis PR updates the <Version> tag in the .csproj file." \
-            --base master \
-            --head develop
-
-  publish:
-    needs: deploy
-    if: github.event_name == 'release' && github.event.action == 'published'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: nuget
-          path: ${{ env.NuGetDirectory }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Publish NuGet package
-        run: |
-          foreach ($file in Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg) {
-            dotnet nuget push $file `
-              --api-key "${{ secrets.NUGET_APIKEY }}" `
-              --source https://api.nuget.org/v3/index.json `
-              --skip-duplicate
-          }
+            $newVersion = "$major.$minor.$patch"
+            $newContent = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$newVersi
 
