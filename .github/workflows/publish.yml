@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}
 
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
@@ -84,9 +84,8 @@ jobs:
           git checkout -b $branchName
           git add *.csproj
           git commit -m "chore: bump AssemblyVersion [skip ci]"
-          git push origin $branchName
+          git push https://x-access-token:${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
 
-          gh auth login --with-token <<< "${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}"
           gh pr create --base main --head $branchName --title "chore: bump AssemblyVersion" --body "Automated version bump"
 
   publish:
