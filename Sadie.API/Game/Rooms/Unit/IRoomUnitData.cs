@@ -1,5 +1,5 @@
 using System.Drawing;
-using Sadie.Enums.Unsorted;
+using Sadie.Enums.Miscellaneous;
 
 namespace Sadie.API.Game.Rooms.Unit;
 

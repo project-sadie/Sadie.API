@@ -1,6 +1,6 @@
 using System.Drawing;
 using Sadie.API.Game.Rooms.Mapping;
-using Sadie.Enums.Unsorted;
+using Sadie.Enums.Miscellaneous;
 
 namespace Sadie.API.Game.Rooms.Pathfinding;
 
