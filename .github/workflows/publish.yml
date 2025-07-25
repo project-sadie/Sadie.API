@@ -1,5 +1,4 @@
 name: publish
-
 on:
   workflow_dispatch:
   push:
@@ -7,7 +6,7 @@ on:
       - 'main'
   pull_request:
     branches:
-      - 'main'
+      - '*'
   release:
     types:
       - published
@@ -15,7 +14,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
-  NuGetDirectory: ${{ github.workspace }}/nuget
+  NuGetDirectory: ${{ github.workspace}}/nuget
 
 defaults:
   run:
@@ -28,7 +27,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -49,110 +47,18 @@ jobs:
     needs: package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Check for automated commit
-        run: |
-          $lastCommit = git log -1 --pretty=%B
-          if ($lastCommit -like "*auto: bump version*") {
-            Write-Host "Automated bump commit detected. Skipping deploy."
-            exit 0
-          }
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 9.0.x
-
-      - name: Create and checkout develop branch
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git fetch origin main
-          git checkout -b develop origin/main
-
-      - name: Bump <Version> in .csproj
-        run: |
-          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName -Raw
-          $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-          if ($content -match $pattern) {
-            $major = [int]$matches[1]
-            $minor = [int]$matches[2]
-            $patch = [int]$matches[3] + 1
-
-            if ($patch -gt 99) {
-              $patch = 0
-              $minor++
-            }
-
-            if ($minor -gt 99) {
-              $minor = 0
-              $major++
-            }
-
-            $newVersion = "$major.$minor.$patch"
-            $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
-
-            if ($newContent -ne $content) {
-              Set-Content -Path $csproj.FullName -Value $newContent
-              git add *.csproj
-              git commit -m "auto: bump version [skip ci]"
-              git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
-            } else {
-              Write-Host "No version change detected, skipping."
-              exit 0
-            }
-          } else {
-            Write-Error "No <Version> tag found in $($csproj.FullName)"
-            exit 1
-          }
-
-      - name: Create and auto‑merge PR from develop to main
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          $existingPR = gh pr list --base main --head develop --json number --jq '.[0].number'
-          if ($existingPR) {
-            Write-Host "PR from develop to main already exists. Skipping."
-            exit 0
-          }
-
-          $pr_url = gh pr create `
-            --title "bump version" `
-            --body "version bump after merge to main." `
-            --base main `
-            --head develop
-
-          Write-Output "PR created: $pr_url"
-          $pr_number = ($pr_url -split "/")[-1]
-          gh pr merge $pr_number --auto --merge
-
-  publish:
-    needs: deploy
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/download-artifact@v4
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
 
-      - name: Setup .NET
+      - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
       - name: Publish NuGet package
         run: |
-          foreach ($file in Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg) {
-            dotnet nuget push $file `
-              --api-key "${{ secrets.NUGET_APIKEY }}" `
-              --source https://api.nuget.org/v3/index.json `
-              --skip-duplicate
+          foreach($file in (Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg)) {
+              dotnet nuget push $file --api-key "${{ secrets.NUGET_APIKEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
           }
-
