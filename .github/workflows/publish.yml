@@ -5,66 +5,81 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   bump-version:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
-
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Bump <Version> in .csproj
+      - name: Extract current version from .csproj
+        id: get_version
         shell: pwsh
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName -Raw
-
-          if ($content -notmatch '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
-              Write-Error "No <Version> tag found."
-              exit 1
+          $content = Get-Content $csproj.FullName
+          $versionLine = $content | Where-Object { $_ -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>' }
+          if (-not $versionLine) {
+            Write-Error "Version tag not found in .csproj"
+            exit 1
           }
 
-          $major = [int]$matches[1]
-          $minor = [int]$matches[2]
-          $patch = [int]$matches[3]
-          $newPatch = $patch + 1
-          $newVersion = "$major.$minor.$newPatch"
+          if ($versionLine -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
+            $major = [int]$matches[1]
+            $minor = [int]$matches[2]
+            $patch = [int]$matches[3] + 1
+            $newVersion = "$major.$minor.$patch"
+            echo "Found current version: $major.$minor.$patch"
+            echo "New version: $newVersion"
 
-          Write-Host "Old version: $major.$minor.$patch"
-          Write-Host "New version: $newVersion"
+            # Export values for later steps
+            echo "major=$major" >> $env:GITHUB_ENV
+            echo "minor=$minor" >> $env:GITHUB_ENV
+            echo "patch=$patch" >> $env:GITHUB_ENV
+            echo "new_version=$newVersion" >> $env:GITHUB_ENV
+          } else {
+            Write-Error "Could not parse version number"
+            exit 1
+          }
 
-          $newContent = $content -replace "<Version>$major\.$minor\.$patch</Version>", "<Version>$newVersion</Version>"
-          Set-Content $csproj.FullName $newContent
+      - name: Update version in .csproj
+        shell: pwsh
+        run: |
+          $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
+          $content = Get-Content $csproj.FullName
+          $updated = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$env:new_version</Version>"
+          Set-Content -Path $csproj.FullName -Value $updated
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git checkout -b "version-bump-v$major.$minor.$newPatch"
-          git add .
-          git commit -m "chore: bump version to v$newVersion"
-          git push origin "version-bump-v$major.$minor.$newPatch"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b version-bump-v${{ env.new_version }}
+          git add *.csproj
+          git commit -m "chore: bump version to v${{ env.new_version }}"
+          git push origin version-bump-v${{ env.new_version }}
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Bump version to v${{ env.newVersion }}"
+          title: "Automated version bump to v${{ env.new_version }}"
           body: |
-            Automated version bump after merge to main.
+            Automated version bump after merge to `main`.
 
-            **Old version**: v${{ env.major }}.${{ env.minor }}.${{ env.patch }}
-            **New version**: v${{ env.newVersion }}
+            Old version: v${{ env.major }}.${{ env.minor }}.${{ env.patch }}
+            New version: v${{ env.new_version }}
+          branch: version-bump-v${{ env.new_version }}
           base: main
-          branch: version-bump-v${{ env.newVersion }}
+
+      - name: Create Git tag
+        run: |
+          git fetch --all
+          git tag v${{ env.new_version }}
+          git push origin v${{ env.new_version }}
 
