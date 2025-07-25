@@ -62,33 +62,54 @@ jobs:
       - name: Bump AssemblyVersion
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
+          Write-Output "Updating version in: $($csproj.FullName)"
           $content = Get-Content $csproj.FullName
           $pattern = '<AssemblyVersion>(\d+)\.(\d+)\.(\d+)\.(\d+)</AssemblyVersion>'
           $newContent = $content -replace $pattern, {
-              $major = [int]$args[1].Groups[1].Value
-              $minor = [int]$args[1].Groups[2].Value
-              $build = [int]$args[1].Groups[3].Value
-              $rev = [int]$args[1].Groups[4].Value + 1
-              "<AssemblyVersion>$major.$minor.$build.$rev</AssemblyVersion>"
+            $major = [int]$matches[1]
+            $minor = [int]$matches[2]
+            $build = [int]$matches[3]
+            $rev = [int]$matches[4] + 1
+            "<AssemblyVersion>$major.$minor.$build.$rev</AssemblyVersion>"
           }
           Set-Content -Path $csproj.FullName -Value $newContent
+
+      - name: Commit and push changes
+        env:
+          GH_TOKEN: ${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}
+        run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           $branchName = "bump-assemblyversion-$(Get-Date -Format 'yyyyMMddHHmmss')"
           git checkout -b $branchName
-          git add $csproj.FullName
+          git add *.csproj
           git commit -m "chore: bump AssemblyVersion [skip ci]"
-          git push -u origin $branchName
+          git push origin $branchName
 
-          # Create PR
-          echo "GH_TOKEN=${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}" >> $env:GITHUB_ENV
-          gh pr create --title "Bump AssemblyVersion" --body "Auto bump of AssemblyVersion" --base main --head $branchName
+          gh auth login --with-token <<< "${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}"
+          gh pr create --base main --head $branchName --title "chore: bump AssemblyVersion" --body "Automated version bump"
+
+  publish:
+    needs: deploy
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: nuget
+          path: ${{ env.NuGetDirectory }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
 
       - name: Publish NuGet package
         run: |
-          mkdir -p ${{ env.NuGetDirectory }}
-          dotnet nuget push "${{ env.NuGetDirectory }}/*.nupkg" `
-            --api-key "${{ secrets.NUGET_APIKEY }}" `
-            --source https://api.nuget.org/v3/index.json `
-            --skip-duplicate
+          foreach ($file in Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg) {
+            dotnet nuget push $file `
+              --api-key "${{ secrets.NUGET_APIKEY }}" `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+          }
 
