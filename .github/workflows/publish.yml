@@ -94,8 +94,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          gh pr create --title "chore: bump version" --body 'Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file.' --base main --head develop
-          gh pr merge --auto --merge --repo "${{ github.repository }}" --head develop
+          pr_url=$(gh pr create --title "chore: bump version" --body 'Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file.' --base main --head develop)
+          echo "Created PR: $pr_url"
+          pr_number=$(basename "$pr_url")
+          gh pr merge "$pr_number" --auto --merge
 
   publish:
     needs: deploy
