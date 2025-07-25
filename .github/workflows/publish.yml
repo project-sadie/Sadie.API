@@ -77,8 +77,7 @@ jobs:
             $newContent = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$newVersion</Version>"
             Set-Content -Path $csproj.FullName -Value $newContent
           } else {
-            Write-Error "Could not find <Version> tag in $($csproj.FullName)"
-            exit 1
+            throw "No <Version> tag found in the .csproj file."
           }
 
       - name: Commit and push version bump
@@ -99,5 +98,26 @@ jobs:
 
   publish:
     needs: deploy
-    if: github.event_name == 'release' && github.event_
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download NuGet artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget
+          path: ${{ env.NuGetDirectory }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Publish NuGet package
+        run: |
+          foreach ($file in Get-ChildItem "${{ env.NuGetDirectory }}" -Recurse -Include *.nupkg) {
+            dotnet nuget push $file `
+              --api-key "${{ secrets.NUGET_APIKEY }}" `
+              --source https://api.nuget.org/v3/index.json `
+              --skip-duplicate
+          }
 
