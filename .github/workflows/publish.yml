@@ -60,7 +60,7 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           title: Bump version to v${{ steps.bump.outputs.new }}
           commit-message: chore: bump version to v${{ steps.bump.outputs.new }}
-          body: >
+          body: |
             Automated version bump after merge to `main`.
 
             **Old version:** v${{ steps.bump.outputs.old }}
