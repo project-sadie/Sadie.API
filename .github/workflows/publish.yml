@@ -39,7 +39,6 @@ jobs:
           IFS='.' read -r major minor patch <<< "$old_version"
           new_patch=$((patch + 1))
           new_version="$major.$minor.$new_patch"
-          echo "Bumped version: $new_version"
           sed -i "s|<Version>$old_version</Version>|<Version>$new_version</Version>|" "$PROJECT_FILE"
           echo "old=$old_version" >> $GITHUB_OUTPUT
           echo "new=$new_version" >> $GITHUB_OUTPUT
@@ -48,10 +47,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "version-bump-v${{ steps.bump.outputs.new }}"
+          branch_name="version-bump-v${{ steps.bump.outputs.new }}"
+          git checkout -b "$branch_name"
           git add "$PROJECT_FILE"
           git commit -m "chore: bump version to v${{ steps.bump.outputs.new }}"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} HEAD
+          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} "$branch_name"
+          echo "branch_name=$branch_name" >> $GITHUB_ENV
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6
@@ -59,11 +60,11 @@ jobs:
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           title: Bump version to v${{ steps.bump.outputs.new }}
           commit-message: chore: bump version to v${{ steps.bump.outputs.new }}
-          body: |
+          body: >
             Automated version bump after merge to `main`.
 
             **Old version:** v${{ steps.bump.outputs.old }}
             **New version:** v${{ steps.bump.outputs.new }}
-          branch: version-bump-v${{ steps.bump.outputs.new }}
           base: main
+          branch: ${{ env.branch_name }}
 
