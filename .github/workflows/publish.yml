@@ -95,8 +95,8 @@ jobs:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           $pr_url = gh pr create `
-            --title "chore: bump version" `
-            --body "Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file." `
+            --title "bump version" `
+            --body "version bump after merge to main." `
             --base main `
             --head develop
           Write-Output "PR created: $pr_url"
@@ -105,7 +105,7 @@ jobs:
 
   publish:
     needs: deploy
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
