@@ -65,22 +65,19 @@ jobs:
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           $content = Get-Content $csproj.FullName -Raw
           $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-
           if ($content -notmatch $pattern) {
             throw "No <Version> found."
           }
-
           $major = [int]$matches[1]
           $minor = [int]$matches[2]
-          $patch = [int]$matches[3]
+          $patch = [int]$matches[3] + 1
           $oldVersion = "$major.$minor.$patch"
-          $newVersion = "$major.$minor." + ($patch + 1)
-
+          $newVersion = "$major.$minor.$patch"
           $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
           Set-Content -Path $csproj.FullName -Value $newContent
-
-          Write-Output "OLD_VERSION=$oldVersion" >> $env:GITHUB_ENV
-          Write-Output "NEW_VERSION=$newVersion" >> $env:GITHUB_ENV
+          Write-Output "Old version: $oldVersion"
+          Write-Output "New version: $newVersion"
+          "NEW_VERSION=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Commit and push version bump
         id: commit_push
@@ -92,7 +89,7 @@ jobs:
           git add *.csproj
           git commit -m "chore: bump version to $env:NEW_VERSION [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
-          echo "branchName=$branchName" >> $env:GITHUB_ENV
+          "branchName=$branchName" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create Pull Request
         shell: bash
@@ -100,21 +97,10 @@ jobs:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           gh pr create \
-            --title "chore: bump version to $NEW_VERSION" \
-            --body "Automated version bump after merge to main.
-
-Old version: v$OLD_VERSION
-New version: v$NEW_VERSION" \
+            --title "chore: bump version to v${NEW_VERSION}" \
+            --body "Automated version bump after merge to main.\n\n**Old version:** v${OLD_VERSION}\n**New version:** v${NEW_VERSION}" \
             --base main \
             --head "${branchName}"
-
-      - name: Enable Auto-Merge
-        shell: bash
-        env:
-          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        run: |
-          pr_url=$(gh pr view --json url -q .url)
-          gh pr merge "$pr_url" --auto --squash
 
   publish:
     needs: deploy
