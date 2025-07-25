@@ -63,14 +63,14 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git fetch origin
-          git checkout -b develop origin/main
+          git checkout -b develop
 
       - name: Bump <Version> in .csproj
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName
+          $content = Get-Content $csproj.FullName -Raw
           $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
+
           if ($content -match $pattern) {
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
@@ -78,6 +78,9 @@ jobs:
             $newVersion = "$major.$minor.$patch"
             $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
             Set-Content -Path $csproj.FullName -Value $newContent
+          } else {
+            Write-Error "No <Version> tag found in $($csproj.FullName)"
+            exit 1
           }
 
       - name: Commit and push version bump
@@ -90,7 +93,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          gh pr create --title "chore: bump version" --body "Automated version bump after merge to main." --base master --head develop
+          gh pr create --title "chore: bump version" --body "Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file." --base master --head develop
 
   publish:
     needs: deploy
