@@ -48,8 +48,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: package
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,50 +60,54 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Bump <Version>
+        id: bump_version
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName
+          $content = Get-Content $csproj.FullName -Raw
           $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-          if ($content -notmatch $pattern) { throw "No <Version> found." }
+
+          if ($content -notmatch $pattern) {
+            throw "No <Version> found."
+          }
+
           $major = [int]$matches[1]
           $minor = [int]$matches[2]
-          $patch = [int]$matches[3] + 1
-          $newVersion = "$major.$minor.$patch"
+          $patch = [int]$matches[3]
+          $oldVersion = "$major.$minor.$patch"
+          $newVersion = "$major.$minor." + ($patch + 1)
+
           $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
           Set-Content -Path $csproj.FullName -Value $newContent
-          echo "newVersion=$newVersion" >> $env:GITHUB_ENV
-          echo "Old version: $($matches[0])"
-          echo "New version: $newVersion"
+
+          echo "OLD_VERSION=$oldVersion" >> $env:GITHUB_ENV
+          echo "NEW_VERSION=$newVersion" >> $env:GITHUB_ENV
 
       - name: Commit and push version bump
+        id: commit_push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           $branchName = "v-bump-$(Get-Date -Format 'yyyyMMddHHmmss')"
           git checkout -b $branchName
           git add *.csproj
-          git commit -m "auto: bump version to v${{ env.newVersion }} [skip ci]"
+          git commit -m "chore: bump version to $env:NEW_VERSION [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
           echo "branchName=$branchName" >> $env:GITHUB_ENV
 
       - name: Create Pull Request
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           gh pr create \
-            --title "chore: bump version to v${{ env.newVersion }}" \
-            --body $'Automated version bump after merge to main.\n\nOld version → new version: v${{ env.newVersion }}' \
+            --title "chore: bump version to v${NEW_VERSION}" \
+            --body "Automated version bump after merge to main.
+
+Old version: v${OLD_VERSION}  
+New version: v${NEW_VERSION}" \
             --base main \
-            --head "${{ env.branchName }}"
-
-      - name: Tag bumped version
-        run: |
-          git tag "v${{ env.newVersion }}"
-          git push origin "v${{ env.newVersion }}"
-
-      - name: Auto-merge PR
-        shell: bash
-        run: |
-          gh pr merge "${{ env.branchName }}" --merge --admin || echo "Auto-merge failed or not permitted"
+            --head "${branchName}" \
+            --label "auto-version"
 
   publish:
     needs: deploy
