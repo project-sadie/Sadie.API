@@ -83,8 +83,8 @@ jobs:
           }
 
           [System.IO.File]::WriteAllLines($csproj.FullName, $lines)
-          echo "oldVersion=$oldVersion" >> $env:GITHUB_ENV
-          echo "newVersion=$newVersion" >> $env:GITHUB_ENV
+          "oldVersion=$oldVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "newVersion=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Commit and push version bump
         id: commit_push
@@ -96,7 +96,7 @@ jobs:
           git add *.csproj
           git commit -m "auto: bump Version to v${{ env.newVersion }} [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
-          echo "branchName=$branchName" >> $env:GITHUB_ENV
+          "branchName=$branchName" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create Pull Request
         shell: bash
@@ -105,12 +105,9 @@ jobs:
         run: |
           gh pr create \
             --title "chore: bump Version to v${{ env.newVersion }}" \
-            --body "Automated version bump after merge to main.
-
-**Old version:** v${{ env.oldVersion }}
-**New version:** v${{ env.newVersion }}" \
+            --body "Automated version bump after merge to main.\n\n**Old version:** v${{ env.oldVersion }}\n**New version:** v${{ env.newVersion }}" \
             --base main \
-            --head "${branchName}"
+            --head "${{ env.branchName }}"
 
   publish:
     needs: deploy
