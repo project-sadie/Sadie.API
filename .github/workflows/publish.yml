@@ -45,7 +45,7 @@ jobs:
           path: ${{ env.NuGetDirectory }}/*.nupkg
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs: package
     runs-on: ubuntu-latest
     steps:
