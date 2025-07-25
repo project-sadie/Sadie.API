@@ -66,7 +66,7 @@ jobs:
           git fetch origin main
           git checkout -b develop origin/main
 
-      - name: Bump <Version> in .csproj
+      - name: Bump <Version> in .csproj with carry-over
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           $content = Get-Content $csproj.FullName -Raw
@@ -74,7 +74,18 @@ jobs:
           if ($content -match $pattern) {
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
-            $patch = [int]$matches[3] + 1
+            $patch = [int]$matches[3]
+
+            $patch++
+            if ($patch -gt 9) {
+              $patch = 0
+              $minor++
+              if ($minor -gt 9) {
+                $minor = 0
+                $major++
+              }
+            }
+
             $newVersion = "$major.$minor.$patch"
             $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
             Set-Content -Path $csproj.FullName -Value $newContent
@@ -126,5 +137,4 @@ jobs:
               --source https://api.nuget.org/v3/index.json `
               --skip-duplicate
           }
-
 
