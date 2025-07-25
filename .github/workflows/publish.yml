@@ -1,4 +1,4 @@
-name: Publish
+name: Bump Version and Create PR
 
 on:
   push:
@@ -6,74 +6,60 @@ on:
       - main
 
 jobs:
-  bump-version:
-    name: Bump Version
+  version-bump:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Git
+      - name: Set up Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Get .csproj file
-        id: csproj
-        run: |
-          FILE=$(find . -name "*.csproj" | head -n 1)
-          echo "file=$FILE" >> $GITHUB_OUTPUT
-
-      - name: Extract and bump version
+      - name: Get current and next version
         id: version
         run: |
-          FILE="${{ steps.csproj.outputs.file }}"
-          echo "Using $FILE"
-          OLD_VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" "$FILE")
-          echo "Old version: $OLD_VERSION"
+          csproj=$(find . -name '*.csproj' | head -n 1)
+          echo "Using $csproj"
 
-          IFS='.' read -r major minor patch <<< "$OLD_VERSION"
-          NEW_VERSION="$major.$minor.$((patch + 1))"
-          echo "New version: $NEW_VERSION"
+          version=$(grep -oPm1 '(?<=<Version>)[^<]+' "$csproj")
+          echo "Current version: $version"
 
-          sed -i "s|<Version>$OLD_VERSION</Version>|<Version>$NEW_VERSION</Version>|" "$FILE"
+          IFS='.' read -r major minor patch <<< "$version"
+          new_version="$major.$minor.$((patch + 1))"
 
-          echo "old=$OLD_VERSION" >> $GITHUB_OUTPUT
-          echo "new=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "branch=version-bump-${NEW_VERSION}" >> $GITHUB_OUTPUT
+          echo "New version: $new_version"
 
-      - name: Commit changes
+          echo "old=$version" >> "$GITHUB_OUTPUT"
+          echo "new=$new_version" >> "$GITHUB_OUTPUT"
+          echo "file=$csproj" >> "$GITHUB_OUTPUT"
+          echo "branch=version-bump-v$new_version" >> "$GITHUB_OUTPUT"
+
+      - name: Bump version
         run: |
-          git checkout -b ${{ steps.version.outputs.branch }}
-          git add "${{ steps.csproj.outputs.file }}"
+          sed -i "s|<Version>${{ steps.version.outputs.old }}</Version>|<Version>${{ steps.version.outputs.new }}</Version>|" "${{ steps.version.outputs.file }}"
+
+      - name: Commit and push changes
+        run: |
+          git checkout -b "${{ steps.version.outputs.branch }}"
+          git add "${{ steps.version.outputs.file }}"
           git commit -m "chore: bump version to v${{ steps.version.outputs.new }}"
-          git push origin ${{ steps.version.outputs.branch }}
+          git push origin "${{ steps.version.outputs.branch }}"
 
       - name: Create Pull Request
-        shell: bash
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          PR_BODY=$(cat <<EOF
-Automated version bump after merge to main.
+          PR_BODY="Automated version bump after merge to main.
 
 **Old version:** v${{ steps.version.outputs.old }}
-**New version:** v${{ steps.version.outputs.new }}
-EOF
-)
+**New version:** v${{ steps.version.outputs.new }}"
+
           gh pr create \
             --title "chore: bump version to v${{ steps.version.outputs.new }}" \
             --body "$PR_BODY" \
             --base main \
             --head "${{ steps.version.outputs.branch }}"
-
-      - name: Create Git tag
-        if: success()
-        run: |
-          git tag "v${{ steps.version.outputs.new }}"
-          git push origin "v${{ steps.version.outputs.new }}"
 
