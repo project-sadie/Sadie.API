@@ -69,15 +69,17 @@ jobs:
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           $content = Get-Content $csproj.FullName -Raw
-          if ($content -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
+          $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
+          if ($content -match $pattern) {
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
             $patch = [int]$matches[3] + 1
             $newVersion = "$major.$minor.$patch"
-            $newContent = $content -replace '<Version>\d+\.\d+\.\d+</Version>', "<Version>$newVersion</Version>"
+            $newContent = $content -replace $pattern, "<Version>$newVersion</Version>"
             Set-Content -Path $csproj.FullName -Value $newContent
           } else {
-            throw "No <Version> tag found in the .csproj file."
+            Write-Error "No <Version> tag found in .csproj file."
+            exit 1
           }
 
       - name: Commit and push version bump
@@ -90,10 +92,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          gh pr create \
-            --title "chore: bump version" \
-            --body "Automated version bump after merge to main.\n\nThis PR updates the <Version> tag in the .csproj file." \
-            --base master \
+          gh pr create `
+            --title "chore: bump version" `
+            --body "Automated version bump after merge to main.`n`nThis PR updates the <Version> tag in the .csproj file." `
+            --base master `
             --head develop
 
   publish:
@@ -101,8 +103,7 @@ jobs:
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ubuntu-latest
     steps:
-      - name: Download NuGet artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: nuget
           path: ${{ env.NuGetDirectory }}
