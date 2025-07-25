@@ -71,7 +71,6 @@ jobs:
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
           $content = Get-Content $csproj.FullName -Raw
           $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
-
           if ($content -match $pattern) {
             $major = [int]$matches[1]
             $minor = [int]$matches[2]
@@ -90,14 +89,19 @@ jobs:
           git commit -m "auto: bump version [skip ci]"
           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} develop --force
 
-      - name: Create and auto-merge Pull Request from develop to main
+      - name: Create and auto‑merge PR from develop to main
+        shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          pr_url=$(gh pr create --title "chore: bump version" --body 'Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file.' --base main --head develop)
-          echo "Created PR: $pr_url"
-          pr_number=$(basename "$pr_url")
-          gh pr merge "$pr_number" --auto --merge
+          $pr_url = gh pr create `
+            --title "chore: bump version" `
+            --body "Automated version bump after merge to main. This PR updates the <Version> tag in the .csproj file." `
+            --base main `
+            --head develop
+          Write-Output "PR created: $pr_url"
+          $pr_number = ($pr_url -split "/")[-1]
+          gh pr merge $pr_number --auto --merge
 
   publish:
     needs: deploy
