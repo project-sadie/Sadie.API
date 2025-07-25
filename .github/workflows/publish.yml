@@ -74,18 +74,18 @@ jobs:
           }
           Set-Content -Path $csproj.FullName -Value $newContent
 
-      - name: Commit and push changes
-        env:
-          GH_TOKEN: ${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}
+      - name: Commit, push, and create PR
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+
           $branchName = "bump-assemblyversion-$(Get-Date -Format 'yyyyMMddHHmmss')"
           git checkout -b $branchName
           git add *.csproj
           git commit -m "chore: bump AssemblyVersion [skip ci]"
           git push https://x-access-token:${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branchName
 
+          $env:GH_TOKEN = "${{ secrets.ORG_PERSONAL_ACCESS_TOKEN }}"
           gh pr create --base main --head $branchName --title "chore: bump AssemblyVersion" --body "Automated version bump"
 
   publish:
