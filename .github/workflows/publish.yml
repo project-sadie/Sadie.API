@@ -1,85 +1,80 @@
-name: publish
+name: Publish
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
-
-env:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  DOTNET_NOLOGO: true
-  NuGetDirectory: ${{ github.workspace }}/nuget
 
 permissions:
   contents: write
   pull-requests: write
 
-defaults:
-  run:
-    shell: pwsh
-
 jobs:
-  bump-version:
-    if: github.ref == 'refs/heads/main'
+  bump-and-publish:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: '8.x'
 
       - name: Bump <Version> in .csproj
         id: bump_version
+        shell: pwsh
         run: |
           $csproj = Get-ChildItem -Recurse -Filter *.csproj | Select-Object -First 1
-          $content = Get-Content $csproj.FullName
-          $pattern = '<Version>(\d+)\.(\d+)\.(\d+)</Version>'
+          $lines = Get-Content $csproj.FullName
+          $newLines = @()
+          $versionFound = $false
 
-          if ($content -match $pattern) {
-            $major = [int]$matches[1]
-            $minor = [int]$matches[2]
-            $patch = [int]$matches[3] + 1
-            $newVersion = "$major.$minor.$patch"
-            $newLine = "<Version>$newVersion</Version>"
-            $newContent = $content -replace $pattern, $newLine
-            Set-Content $csproj.FullName $newContent
-
-            echo "new_version=$newVersion" >> $env:GITHUB_ENV
-            echo "version_bumped=true" >> $env:GITHUB_ENV
-          } else {
-            echo "No <Version> tag found. Skipping."
-            echo "version_bumped=false" >> $env:GITHUB_ENV
+          foreach ($line in $lines) {
+            if ($line -match '<Version>(\d+)\.(\d+)\.(\d+)</Version>') {
+              $major = [int]$matches[1]
+              $minor = [int]$matches[2]
+              $patch = [int]$matches[3] + 1
+              $newVersion = "$major.$minor.$patch"
+              $newLine = "<Version>$newVersion</Version>"
+              $newLines += $newLine
+              $versionFound = $true
+              echo "new_version=$newVersion" >> $env:GITHUB_ENV
+              echo "version_bumped=true" >> $env:GITHUB_ENV
+            } else {
+              $newLines += $line
+            }
           }
 
-      - name: Commit and push version bump
+          if (-not $versionFound) {
+            echo "No <Version> tag found."
+            echo "version_bumped=false" >> $env:GITHUB_ENV
+            exit 0
+          }
+
+          Set-Content -Path $csproj.FullName -Value $newLines
+
+      - name: Commit and push changes
         if: env.version_bumped == 'true'
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          $branch = "version-bump-v${{ env.new_version }}"
-          git checkout -b $branch
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b version-bump-v${{ env.new_version }}
           git add *.csproj
           git commit -m "chore: bump version to v${{ env.new_version }}"
-          git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} $branch
-          echo "version_branch=$branch" >> $env:GITHUB_ENV
+          git push origin version-bump-v${{ env.new_version }}
 
-      - name: Create Pull Request
+      - name: Create pull request
         if: env.version_bumped == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          commit-message: "chore: bump version to v${{ env.new_version }}"
-          title: "Bump version to v${{ env.new_version }}"
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          title: "🔖 Version bump to v${{ env.new_version }}"
           body: |
-            This PR bumps the version in the .csproj file to v${{ env.new_version }}.
-            Auto-generated after a push to main.
+            Automated version bump after merge to `main`.
+
+            **New version:** `v${{ env.new_version }}`
           base: main
-          branch: ${{ env.version_branch }}
+          branch: version-bump-v${{ env.new_version }}
 
