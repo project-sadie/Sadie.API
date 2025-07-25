@@ -30,10 +30,8 @@ jobs:
           IFS='.' read -r major minor patch <<< "$version"
           new_version="$major.$minor.$((patch + 1))"
 
-          echo "New version: $new_version"
-
-          echo "old=$version" >> "$GITHUB_OUTPUT"
           echo "new=$new_version" >> "$GITHUB_OUTPUT"
+          echo "old=$version" >> "$GITHUB_OUTPUT"
           echo "file=$csproj" >> "$GITHUB_OUTPUT"
           echo "branch=version-bump-v$new_version" >> "$GITHUB_OUTPUT"
 
@@ -52,14 +50,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          PR_BODY="Automated version bump after merge to main.
-
-**Old version:** v${{ steps.version.outputs.old }}
-**New version:** v${{ steps.version.outputs.new }}"
-
           gh pr create \
             --title "chore: bump version to v${{ steps.version.outputs.new }}" \
-            --body "$PR_BODY" \
+            --body "$(echo -e 'Automated version bump after merge to main.\n\n**Old version:** v${{ steps.version.outputs.old }}\n**New version:** v${{ steps.version.outputs.new }}')" \
             --base main \
             --head "${{ steps.version.outputs.branch }}"
 
