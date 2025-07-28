@@ -1,6 +1,6 @@
 using System.Drawing;
+using Sadie.API.Db.Models.Players.Furniture;
 using Sadie.API.Game.Rooms.Users;
-using Sadie.Db.Models.Players.Furniture;
 using Sadie.Enums.Game.Rooms.Mapping;
 using Sadie.Enums.Game.Rooms.Users;
 using Sadie.Enums.Miscellaneous;
@@ -21,11 +21,11 @@ public interface IRoomTileMapHelperService
     RoomTileState GetTileState(
         int x, 
         int y, 
-        IEnumerable<PlayerFurnitureItemPlacementData> furnitureItems);
+        IEnumerable<IPlayerFurnitureItemPlacementData> furnitureItems);
 
-    List<PlayerFurnitureItemPlacementData> GetItemsForPosition(int x,
+    List<IPlayerFurnitureItemPlacementData> GetItemsForPosition(int x,
         int y,
-        IEnumerable<PlayerFurnitureItemPlacementData> items);
+        IEnumerable<IPlayerFurnitureItemPlacementData> items);
 
     short[,] GetWorldArrayFromTileMap(IRoomTileMap map,
         Point goalPoint,
@@ -34,7 +34,7 @@ public interface IRoomTileMapHelperService
     void UpdateTileMapsForPoints(
         List<Point> points, 
         IRoomTileMap tileMap, 
-        ICollection<PlayerFurnitureItemPlacementData> furnitureItems);
+        ICollection<IPlayerFurnitureItemPlacementData> furnitureItems);
 
     bool CanPlaceAt(
         IEnumerable<Point> points,  
@@ -47,7 +47,7 @@ public interface IRoomTileMapHelperService
     double GetItemPlacementHeight(
         IRoomTileMap roomTileMap,
         IEnumerable<Point> pointsForPlacement, 
-        ICollection<PlayerFurnitureItemPlacementData> roomFurnitureItems);
+        ICollection<IPlayerFurnitureItemPlacementData> roomFurnitureItems);
 
     int GetSquaresBetweenPoints(Point a, Point b);
     RoomUserEffect GetEffectFromInteractionType(string interactionType);

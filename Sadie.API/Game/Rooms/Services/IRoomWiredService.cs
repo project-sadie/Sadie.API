@@ -1,30 +1,27 @@
-using Microsoft.EntityFrameworkCore;
+using Sadie.API.Db.Models.Players.Furniture;
 using Sadie.API.Game.Rooms.Users;
-using Sadie.Db;
-using Sadie.Db.Models.Players.Furniture;
 
 namespace Sadie.API.Game.Rooms.Services;
 
 public interface IRoomWiredService
 {
-    IEnumerable<PlayerFurnitureItemPlacementData> GetTriggers(
+    IEnumerable<IPlayerFurnitureItemPlacementData> GetTriggers(
         string interactionType,
-        IEnumerable<PlayerFurnitureItemPlacementData> roomItems,
+        IEnumerable<IPlayerFurnitureItemPlacementData> roomItems,
         string requiredMessage = "",
         List<int>? requiredSelectedIds = null);
     
-    IEnumerable<PlayerFurnitureItemPlacementData> GetEffectsForTrigger(
-        PlayerFurnitureItemPlacementData trigger,
-        IEnumerable<PlayerFurnitureItemPlacementData> roomItems);
+    IEnumerable<IPlayerFurnitureItemPlacementData> GetEffectsForTrigger(
+        IPlayerFurnitureItemPlacementData trigger,
+        IEnumerable<IPlayerFurnitureItemPlacementData> roomItems);
 
     Task RunTriggerForRoomAsync(IRoomLogic room,
-        PlayerFurnitureItemPlacementData trigger,
+        IPlayerFurnitureItemPlacementData trigger,
         IRoomUser userWhoTriggered);
 
     int GetWiredCode(string interactionType);
 
     Task SaveSettingsAsync(
-        PlayerFurnitureItemPlacementData placementData,
-        IDbContextFactory<SadieDbContext> dbContextFactory,
-        PlayerFurnitureItemWiredData wiredData);
+        IPlayerFurnitureItemPlacementData placementData,
+        IPlayerFurnitureItemWiredData wiredData);
 }
