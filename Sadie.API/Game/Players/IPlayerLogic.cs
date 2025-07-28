@@ -13,7 +13,7 @@ public interface IPlayerLogic
     string Username { get; init; }
     string Email { get; init; }
     ICollection<Role> Roles { get; init; }
-    DateTime CreatedAt { get; init; }
+    DateTimeOffset CreatedAt { get; init; }
     PlayerData Data { get; init; }
     PlayerAvatarData? AvatarData { get; init; }
     List<PlayerTag> Tags { get; init; }
