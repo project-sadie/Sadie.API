@@ -1,5 +1,5 @@
+using Sadie.API.Db.Models.Players;
 using Sadie.API.Networking;
-using Sadie.Db.Models.Players;
 
 namespace Sadie.API.Game.Players;
 
@@ -7,13 +7,13 @@ public interface IPlayerRepository
 {
     IPlayerLogic? GetPlayerLogicById(long id);
     IPlayerLogic? GetPlayerLogicByUsername(string username);
-    Task<Player?> GetPlayerByIdAsync(long id);
-    Task<Player?> GetPlayerByUsernameAsync(string username);
+    Task<IPlayer?> GetPlayerByIdAsync(long id);
+    Task<IPlayer?> GetPlayerByUsernameAsync(string username);
     ICollection<IPlayerLogic> GetAll();
     bool TryAddPlayer(IPlayerLogic player);
     Task<bool> TryRemovePlayerAsync(long playerId);
     long Count();
-    Task<List<Player>> GetPlayersForSearchAsync(string searchQuery, long[] excludeIds);
-    Task<List<PlayerRelationship>> GetRelationshipsForPlayerAsync(long playerId);
+    Task<List<IPlayer>> GetPlayersForSearchAsync(string searchQuery, long[] excludeIds);
+    Task<List<IPlayerRelationship>> GetRelationshipsForPlayerAsync(long playerId);
     Task BroadcastDataAsync(AbstractPacketWriter writer);
 }
