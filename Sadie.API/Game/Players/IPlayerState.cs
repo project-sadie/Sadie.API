@@ -1,4 +1,4 @@
-using Sadie.API.Db.Models.Players.Furniture;
+using Sadie.Db.Models.Players.Furniture;
 
 namespace Sadie.API.Game.Players;
 
@@ -9,6 +9,6 @@ public interface IPlayerState
     DateTime LastCatalogPurchase { get; set; }
     DateTime LastSubscriptionModification { get; set; }
     string CatalogMode { get; set; }
-    IPlayerFurnitureItemPlacementData? Teleport { get; set; }
+    PlayerFurnitureItemPlacementData? Teleport { get; set; }
     int CurrentRoomId { get; set; }
 }

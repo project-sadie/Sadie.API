@@ -1,10 +1,9 @@
-using System.Text.RegularExpressions;
 using DotNetty.Transport.Channels;
-using Sadie.API.Db.Models;
-using Sadie.API.Db.Models.Players;
-using Sadie.API.Db.Models.Players.Friendships;
-using Sadie.API.Db.Models.Rooms;
-using Sadie.API.Db.Models.Server;
+using Sadie.Db.Models;
+using Sadie.Db.Models.Players;
+using Sadie.Db.Models.Players.Furniture;
+using Sadie.Db.Models.Rooms;
+using Sadie.Db.Models.Server;
 
 namespace Sadie.API.Game.Players;
 
@@ -13,34 +12,34 @@ public interface IPlayerLogic
     long Id { get; init; }
     string Username { get; init; }
     string Email { get; init; }
-    ICollection<IRole> Roles { get; init; }
+    ICollection<Role> Roles { get; init; }
     DateTime CreatedAt { get; init; }
-    IPlayerData Data { get; init; }
-    IPlayerAvatarData? AvatarData { get; init; }
-    List<IPlayerTag> Tags { get; init; }
-    ICollection<IPlayerRoomLike> RoomLikes { get; init; }
-    ICollection<IPlayerRelationship> Relationships { get; init; }
-    IPlayerNavigatorSettings? NavigatorSettings { get; init; }
-    IPlayerGameSettings? GameSettings { get; init; }
-    ICollection<IPlayerBadge> Badges { get; init; }
-    ICollection<IPlayerFurnitureItem> FurnitureItems { get; init; }
-    ICollection<IPlayerWardrobeItem> WardrobeItems { get; init; }
-    ICollection<IPlayerSubscription> Subscriptions { get; init; }
-    ICollection<IPlayerRespect> Respects { get; init; }
-    ICollection<IPlayerSavedSearch> SavedSearches { get; init; }
-    ICollection<IPlayerFriendship> OutgoingFriendships { get; init; }
-    ICollection<IPlayerFriendship> IncomingFriendships { get; init; }
-    ICollection<IServerPeriodicCurrencyRewardLog> RewardLogs { get; init; }
-    ICollection<IRoom> Rooms { get; set; }
-    ICollection<IPlayerIgnore> Ignores { get; set; }
+    PlayerData Data { get; init; }
+    PlayerAvatarData? AvatarData { get; init; }
+    List<PlayerTag> Tags { get; init; }
+    ICollection<PlayerRoomLike> RoomLikes { get; init; }
+    ICollection<PlayerRelationship> Relationships { get; init; }
+    PlayerNavigatorSettings? NavigatorSettings { get; init; }
+    PlayerGameSettings? GameSettings { get; init; }
+    ICollection<PlayerBadge> Badges { get; init; }
+    ICollection<PlayerFurnitureItem> FurnitureItems { get; init; }
+    ICollection<PlayerWardrobeItem> WardrobeItems { get; init; }
+    ICollection<PlayerSubscription> Subscriptions { get; init; }
+    ICollection<PlayerRespect> Respects { get; init; }
+    ICollection<PlayerSavedSearch> SavedSearches { get; init; }
+    ICollection<PlayerFriendship> OutgoingFriendships { get; init; }
+    ICollection<PlayerFriendship> IncomingFriendships { get; init; }
+    ICollection<ServerPeriodicCurrencyRewardLog> RewardLogs { get; init; }
+    ICollection<Room> Rooms { get; set; }
+    ICollection<PlayerIgnore> Ignores { get; set; }
     ICollection<Group> Groups { get; init; }
-    ICollection<IPlayerBot> Bots { get; init; }
-    ICollection<IPlayerRoomVisit> RoomVisits { get; init; }
+    ICollection<PlayerBot> Bots { get; init; }
+    ICollection<PlayerRoomVisit> RoomVisits { get; init; }
     int GetAcceptedFriendshipCount();
-    List<IPlayerFriendship> GetMergedFriendships();
+    List<PlayerFriendship> GetMergedFriendships();
     bool IsFriendsWith(int targetId);
-    IPlayerFriendship? TryGetAcceptedFriendshipFor(long targetId);
-    IPlayerFriendship? TryGetFriendshipFor(long targetId);
+    PlayerFriendship? TryGetAcceptedFriendshipFor(long targetId);
+    PlayerFriendship? TryGetFriendshipFor(long targetId);
     void DeleteFriendshipFor(long targetId);
     bool HasPermission(string name);
     IPlayerState State { get; }
