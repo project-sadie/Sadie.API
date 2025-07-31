@@ -14,13 +14,13 @@ public interface IPlayerLogic
     string Email { get; init; }
     ICollection<Role> Roles { get; init; }
     DateTimeOffset CreatedAt { get; init; }
-    PlayerData Data { get; init; }
-    PlayerAvatarData? AvatarData { get; init; }
+    PlayerData Data { get; set; }
+    PlayerAvatarData? AvatarData { get; set; }
     List<PlayerTag> Tags { get; init; }
     ICollection<PlayerRoomLike> RoomLikes { get; init; }
     ICollection<PlayerRelationship> Relationships { get; init; }
-    PlayerNavigatorSettings? NavigatorSettings { get; init; }
-    PlayerGameSettings? GameSettings { get; init; }
+    PlayerNavigatorSettings? NavigatorSettings { get; set; }
+    PlayerGameSettings? GameSettings { get; set; }
     ICollection<PlayerBadge> Badges { get; init; }
     ICollection<PlayerFurnitureItem> FurnitureItems { get; init; }
     ICollection<PlayerWardrobeItem> WardrobeItems { get; init; }
