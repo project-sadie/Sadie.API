@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using Sadie.API.Game.Players;
+using Sadie.API.Game.Rooms.Chat.Commands;
 using Sadie.API.Game.Rooms.Unit;
 using Sadie.Enums.Game.Rooms;
 
@@ -24,4 +25,5 @@ public interface IRoomUser : IRoomUnit, IAsyncDisposable
     bool HasRights();
     Task SendWhisperAsync(string message);
     DateTime SignSet { get; set; }
+    Task ExecuteCommandAsync(IRoomChatCommand command, List<string> parameters);
 }
