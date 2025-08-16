@@ -25,5 +25,4 @@ public interface IRoomUser : IRoomUnit, IAsyncDisposable
     bool HasRights();
     Task SendWhisperAsync(string message);
     DateTime SignSet { get; set; }
-    Task ExecuteCommandAsync(IRoomChatCommand command, IEnumerable<string> parameters);
 }
