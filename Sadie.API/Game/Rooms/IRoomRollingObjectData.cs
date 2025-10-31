@@ -1,5 +1,3 @@
-using Sadie.Shared.Attributes;
-
 namespace Sadie.API.Game.Rooms;
 
 public interface IRoomRollingObjectData

@@ -10,4 +10,5 @@ public interface IRoomLogic : IRoom, IAsyncDisposable
     IRoomTileMap TileMap { get; }
     IRoomUserRepository UserRepository { get; }
     IRoomBotRepository BotRepository { get; }
+    int IdleTicks { get; set; }
 }
