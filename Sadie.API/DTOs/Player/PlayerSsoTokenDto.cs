@@ -1,0 +1,9 @@
+namespace Sadie.API.DTOs.Player;
+
+public class PlayerSsoTokenDto
+{
+    public string? Token { get; init; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset ExpiresAt { get; init; }
+    public DateTimeOffset? UsedAt { get; init; }
+}
