@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Sadie.API.Plugins;
+namespace Sadie.API.Interfaces.Plugins;
 
 public interface IPluginServiceCollection
 {

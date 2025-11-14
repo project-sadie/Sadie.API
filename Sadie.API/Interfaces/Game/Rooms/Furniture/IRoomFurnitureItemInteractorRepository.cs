@@ -1,4 +1,4 @@
-namespace Sadie.API.Game.Rooms.Furniture;
+namespace Sadie.API.Interfaces.Game.Rooms.Furniture;
 
 public interface IRoomFurnitureItemInteractorRepository
 {

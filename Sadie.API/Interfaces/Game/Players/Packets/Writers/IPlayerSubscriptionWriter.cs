@@ -1,4 +1,4 @@
-namespace Sadie.API.Game.Players.Packets.Writers;
+namespace Sadie.API.Interfaces.Game.Players.Packets.Writers;
 
 public interface IPlayerSubscriptionWriter
 {

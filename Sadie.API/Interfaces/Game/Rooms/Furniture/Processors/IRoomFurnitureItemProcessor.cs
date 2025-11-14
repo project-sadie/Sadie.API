@@ -1,6 +1,6 @@
-using Sadie.API.Networking;
+using Sadie.API.Interfaces.Networking;
 
-namespace Sadie.API.Game.Rooms.Furniture.Processors;
+namespace Sadie.API.Interfaces.Game.Rooms.Furniture.Processors;
 
 public interface IRoomFurnitureItemProcessor
 {

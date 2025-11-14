@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace Sadie.API.Game.Rooms.Bots;
+namespace Sadie.API.Interfaces.Game.Rooms.Bots;
 
 public interface IRoomBotFactory
 {

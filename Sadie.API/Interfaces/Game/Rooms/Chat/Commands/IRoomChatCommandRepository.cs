@@ -1,4 +1,4 @@
-namespace Sadie.API.Game.Rooms.Chat.Commands;
+namespace Sadie.API.Interfaces.Game.Rooms.Chat.Commands;
 
 public interface IRoomChatCommandRepository
 {
