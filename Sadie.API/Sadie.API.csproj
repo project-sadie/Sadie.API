@@ -12,7 +12,9 @@
     
     <ItemGroup>
         <PackageReference Include="DotNetty.Transport" Version="0.7.6" />
-        <PackageReference Include="Sadie.Db" Version="1.9.2" />
-        <PackageReference Include="Sadie.Enums" Version="1.3.2" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Interfaces\" />
     </ItemGroup>
 </Project>

@@ -1,9 +1,10 @@
 using System.Reflection;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable CollectionNeverQueried.Local
 // ReSharper disable CollectionNeverQueried.Global
 
-namespace Sadie.API.Networking;
+namespace Sadie.API.Interfaces.Networking;
 
 public abstract class AbstractPacketWriter
 {
