@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using DotNetty.Transport.Channels;
 using Sadie.API.DTOs.Player;
 using Sadie.API.DTOs.Player.Furniture;
+using Sadie.API.DTOs.Server;
 
 namespace Sadie.API.Interfaces.Game.Players;
 
@@ -15,7 +16,7 @@ public interface IPlayerLogic
     PlayerDataDto Data { get; set; }
     PlayerAvatarDataDto? AvatarData { get; set; }
     List<PlayerTagDto> Tags { get; init; }
-    ICollection<PlayerRoomLike> RoomLikes { get; init; }
+    ICollection<PlayerRoomLikeDto> RoomLikes { get; init; }
     ICollection<PlayerRelationshipDto> Relationships { get; init; }
     PlayerNavigatorSettingsDto? NavigatorSettings { get; set; }
     PlayerGameSettingsDto? GameSettings { get; set; }

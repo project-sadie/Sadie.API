@@ -18,11 +18,11 @@ public interface IRoomTileMapHelperService
     RoomTileState GetTileState(
         int x, 
         int y, 
-        IEnumerable<PlayerFurnitureItemPlacementData> furnitureItems);
+        IEnumerable<PlayerFurnitureItemPlacementDataDto> furnitureItems);
 
-    List<PlayerFurnitureItemPlacementData> GetItemsForPosition(int x,
+    List<PlayerFurnitureItemPlacementDataDto> GetItemsForPosition(int x,
         int y,
-        IEnumerable<PlayerFurnitureItemPlacementData> items);
+        IEnumerable<PlayerFurnitureItemPlacementDataDto> items);
 
     short[,] GetWorldArrayFromTileMap(IRoomTileMap map,
         Point goalPoint,

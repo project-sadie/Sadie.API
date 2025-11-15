@@ -14,7 +14,6 @@ public class CatalogPageDto
     public bool Visible { get; init; }
     public List<string> ImagesJson { get; init; } = [];
     public List<string> TextsJson { get; init; } = [];
-    
     public List<int> PageIds { get; init; } = [];
     public List<int> ItemIds { get; init; } = [];
 }

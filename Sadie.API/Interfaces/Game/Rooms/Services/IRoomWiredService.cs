@@ -24,5 +24,5 @@ public interface IRoomWiredService
     Task SaveSettingsAsync(
         PlayerFurnitureItemPlacementDataDto placementData,
         IDbContextFactory<SadieDbContext> dbContextFactory,
-        PlayerFurnitureItemWiredData wiredData);
+        PlayerFurnitureItemWiredDataDto wiredData);
 }
