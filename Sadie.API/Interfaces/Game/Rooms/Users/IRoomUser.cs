@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using Sadie.API.Interfaces.Game.Players;
 using Sadie.API.Interfaces.Game.Rooms.Unit;
+using Sadie.Core.Enums.Game.Rooms;
 
 namespace Sadie.API.Interfaces.Game.Rooms.Users;
 

@@ -1,3 +1,5 @@
+using Sadie.Core.Enums.Game.Players;
+
 namespace Sadie.API.DTOs.Player;
 
 public record PlayerWardrobeItemDto

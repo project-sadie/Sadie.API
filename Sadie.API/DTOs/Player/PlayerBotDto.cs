@@ -1,3 +1,6 @@
+using Sadie.Core.Enums.Game.Players;
+using Sadie.Core.Enums.Miscellaneous;
+
 namespace Sadie.API.DTOs.Player;
 
 public record PlayerBotDto

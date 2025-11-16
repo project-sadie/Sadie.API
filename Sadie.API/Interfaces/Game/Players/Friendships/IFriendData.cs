@@ -1,4 +1,4 @@
-using Sadie.Enums.Game.Players;
+using Sadie.Core.Enums.Game.Players;
 
 namespace Sadie.API.Interfaces.Game.Players.Friendships;
 

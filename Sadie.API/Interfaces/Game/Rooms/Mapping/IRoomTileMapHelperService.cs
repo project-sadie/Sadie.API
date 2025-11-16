@@ -1,6 +1,9 @@
 using System.Drawing;
 using Sadie.API.DTOs.Player.Furniture;
 using Sadie.API.Interfaces.Game.Rooms.Users;
+using Sadie.Core.Enums.Game.Rooms.Mapping;
+using Sadie.Core.Enums.Game.Rooms.Users;
+using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.Interfaces.Game.Rooms.Mapping;
 

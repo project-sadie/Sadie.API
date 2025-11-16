@@ -1,4 +1,4 @@
-using Sadie.Enums.Game.Rooms.Users;
+using Sadie.Core.Enums.Game.Rooms.Users;
 
 namespace Sadie.API.Interfaces.Game.Rooms.Services;
 
