@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerAvatarDataDto
+public record PlayerAvatarDataDto
 {
     public string FigureCode { get; init; } = string.Empty;
     public string? Motto { get; init; }

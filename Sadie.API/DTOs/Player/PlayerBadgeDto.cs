@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerBadgeDto
+public record PlayerBadgeDto
 {
     public int BadgeId { get; init; }
     public string? BadgeCode { get; init; }

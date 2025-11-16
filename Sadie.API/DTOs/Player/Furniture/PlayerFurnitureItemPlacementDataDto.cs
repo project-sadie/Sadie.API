@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player.Furniture;
 
-public class PlayerFurnitureItemPlacementDataDto
+public record PlayerFurnitureItemPlacementDataDto
 {
     public int RoomId { get; init; }
     public int PositionX { get; init; }

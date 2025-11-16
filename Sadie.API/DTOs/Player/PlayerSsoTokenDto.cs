@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerSsoTokenDto
+public record PlayerSsoTokenDto
 {
     public string? Token { get; init; }
     public DateTimeOffset CreatedAt { get; init; }

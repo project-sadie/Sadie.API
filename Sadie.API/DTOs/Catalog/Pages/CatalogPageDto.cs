@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Catalog.Pages;
 
-public class CatalogPageDto
+public record CatalogPageDto
 {
     public int Id { get; init; }
     public string? Name { get; init; }

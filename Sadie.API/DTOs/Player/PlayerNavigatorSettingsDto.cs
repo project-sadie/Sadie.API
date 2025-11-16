@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerNavigatorSettingsDto
+public record PlayerNavigatorSettingsDto
 {
     public int WindowX { get; init; }
     public int WindowY { get; init; }

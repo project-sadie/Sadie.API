@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Server;
 
-public class ServerPeriodicCurrencyRewardLogDto
+public record ServerPeriodicCurrencyRewardLogDto
 {
     public int Id { get; set; }
     public long PlayerId { get; set; }

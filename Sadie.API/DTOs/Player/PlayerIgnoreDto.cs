@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerIgnoreDto
+public record PlayerIgnoreDto
 {
     public int Id { get; init; }
     public long PlayerId { get; init; }

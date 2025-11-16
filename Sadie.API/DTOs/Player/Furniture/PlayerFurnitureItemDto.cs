@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player.Furniture;
 
-public class PlayerFurnitureItemDto
+public record PlayerFurnitureItemDto
 {
     public int FurnitureItemId { get; init; }
     public string LimitedData { get; init; } = string.Empty;

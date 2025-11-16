@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Rooms;
 
-public class RoomPaintSettingsDto
+public record RoomPaintSettingsDto
 {
     public int Id { get; set; }
     public int RoomId { get; set; }

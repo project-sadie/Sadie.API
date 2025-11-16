@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player.Furniture;
 
-public class PlayerFurnitureItemWiredDataDto
+public record PlayerFurnitureItemWiredDataDto
 {
     public string Message { get; init; } = string.Empty;
     public int Delay { get; init; }

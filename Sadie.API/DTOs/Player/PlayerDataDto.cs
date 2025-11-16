@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerDataDto
+public record PlayerDataDto
 {
     public int CreditBalance { get; init; }
     public int PixelBalance { get; init; }

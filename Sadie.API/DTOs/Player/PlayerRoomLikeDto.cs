@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerRoomLikeDto
+public record PlayerRoomLikeDto
 {
     public int Id { get; set; }
     public long PlayerId { get; set; }

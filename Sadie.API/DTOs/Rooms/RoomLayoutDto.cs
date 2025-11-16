@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Rooms;
 
-public class RoomLayoutDto
+public record RoomLayoutDto
 {
     public int Id { get; set; }
     public string? Name { get; set; }

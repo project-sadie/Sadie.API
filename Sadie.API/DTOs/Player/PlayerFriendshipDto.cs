@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerFriendshipDto
+public record PlayerFriendshipDto
 {
     public int Id { get; set; }
     public long OriginPlayerId { get; set; }

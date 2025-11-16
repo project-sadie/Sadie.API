@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerGameSettingsDto
+public record PlayerGameSettingsDto
 {
     public int SystemVolume { get; init; }
     public int FurnitureVolume { get; init; }

@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerDto
+public record PlayerDto
 {
     public long Id { get; init; }
     public string Username { get; init; } = string.Empty;

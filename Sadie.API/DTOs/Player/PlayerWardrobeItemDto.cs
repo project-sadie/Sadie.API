@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Player;
 
-public class PlayerWardrobeItemDto
+public record PlayerWardrobeItemDto
 {
     public int Id { get; set; }
     public int SlotId { get; set; }
