@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using DotNetty.Transport.Channels;
+using Sadie.API.DTOs;
 using Sadie.API.DTOs.Player;
 using Sadie.API.DTOs.Player.Furniture;
+using Sadie.API.DTOs.Rooms;
 using Sadie.API.DTOs.Server;
 
 namespace Sadie.API.Interfaces.Game.Players;
@@ -11,7 +13,7 @@ public interface IPlayerLogic
     long Id { get; init; }
     string Username { get; init; }
     string Email { get; init; }
-    ICollection<Role> Roles { get; init; }
+    ICollection<RoleDto> Roles { get; init; }
     DateTimeOffset CreatedAt { get; init; }
     PlayerDataDto Data { get; set; }
     PlayerAvatarDataDto? AvatarData { get; set; }
@@ -29,7 +31,7 @@ public interface IPlayerLogic
     ICollection<PlayerFriendshipDto> OutgoingFriendships { get; init; }
     ICollection<PlayerFriendshipDto> IncomingFriendships { get; init; }
     ICollection<ServerPeriodicCurrencyRewardLogDto> RewardLogs { get; init; }
-    ICollection<Room> Rooms { get; set; }
+    ICollection<RoomDto> Rooms { get; set; }
     ICollection<PlayerIgnoreDto> Ignores { get; set; }
     ICollection<Group> Groups { get; init; }
     ICollection<PlayerBotDto> Bots { get; init; }
