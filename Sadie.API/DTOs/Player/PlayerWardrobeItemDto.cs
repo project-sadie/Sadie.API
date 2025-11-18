@@ -1,0 +1,11 @@
+using Sadie.Core.Enums.Game.Players;
+
+namespace Sadie.API.DTOs.Player;
+
+public record PlayerWardrobeItemDto
+{
+    public int Id { get; set; }
+    public int SlotId { get; set; }
+    public string? FigureCode { get; set; }
+    public PlayerAvatarGender Gender { get; set; }
+}
