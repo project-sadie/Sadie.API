@@ -7,8 +7,7 @@ public interface IRoomFurnitureItemHelperService
 {
     Task CycleInteractionStateForItemAsync(
         IRoomLogic room, 
-        PlayerFurnitureItemPlacementDataDto roomFurnitureItem,
-        IDbContextFactory<SadieDbContext> dbContextFactory);
+        PlayerFurnitureItemPlacementDataDto roomFurnitureItem);
 
     Task UpdateMetaDataForItemAsync(
         IRoomLogic room, 

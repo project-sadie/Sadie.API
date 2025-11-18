@@ -9,6 +9,6 @@ public interface IRoomUserTrade
     List<PlayerFurnitureItemDto> Items { get; init; }
     void OfferItems(List<PlayerFurnitureItemDto> playerItems);
     Task BroadcastToUsersAsync(AbstractPacketWriter writer);
-    Task SwapItemsAsync(IDbContextFactory<SadieDbContext> dbContextFactory);
+    Task SwapItemsAsync();
     void RemoveOfferedItem(PlayerFurnitureItemDto item);
 }
