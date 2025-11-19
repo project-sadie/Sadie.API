@@ -1,5 +1,5 @@
 ﻿using DotNetty.Transport.Channels;
-using Sadie.API.Networking;
+using Sadie.API.Interfaces.Networking;
 
 namespace Sadie.API;
 
