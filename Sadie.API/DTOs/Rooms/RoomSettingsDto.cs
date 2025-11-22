@@ -1,3 +1,5 @@
+using Sadie.Core.Enums.Game.Rooms;
+
 namespace Sadie.API.DTOs.Rooms;
 
 public record RoomSettingsDto
@@ -5,7 +7,7 @@ public record RoomSettingsDto
     public int Id { get; set; }
     public int RoomId { get; set; }
     public bool WalkDiagonal { get; set; }
-    public string AccessType { get; set; } = string.Empty;
+    public RoomAccessType AccessType { get; set; }
     public string? Password { get; set; }
     public int WhoCanMute { get; set; }
     public int WhoCanKick { get; set; }
