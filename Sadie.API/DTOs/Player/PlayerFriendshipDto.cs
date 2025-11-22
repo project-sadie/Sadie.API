@@ -1,3 +1,5 @@
+using Sadie.Core.Enums.Game.Players;
+
 namespace Sadie.API.DTOs.Player;
 
 public record PlayerFriendshipDto
@@ -7,6 +9,6 @@ public record PlayerFriendshipDto
     public PlayerDto? OriginPlayer { get; init; }
     public long TargetPlayerId { get; set; }
     public PlayerDto? TargetPlayer { get; init; }
-    public string Status { get; set; } = string.Empty;
+    public PlayerFriendshipStatus  Status { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }
