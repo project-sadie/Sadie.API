@@ -1,3 +1,5 @@
+using Sadie.API.DTOs.Furniture;
+
 namespace Sadie.API.DTOs.Player.Furniture;
 
 public record PlayerFurnitureItemDto
@@ -5,9 +7,9 @@ public record PlayerFurnitureItemDto
     public int Id { get; init; }
     public long PlayerId { get; set; }
     public required PlayerDto Player { get; set; }
-    public int FurnitureItemId { get; init; }
-    public string LimitedData { get; init; } = string.Empty;
-    public string MetaData { get; init; } = string.Empty;
-    public PlayerFurnitureItemPlacementDataDto? PlacementData { get; init; }
+    public required FurnitureItemDto FurnitureItem { get; init; }
+    public PlayerFurnitureItemPlacementDataDto? PlacementData { get; set; }
+    public required string LimitedData { get; init; }
+    public required string MetaData { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
 }
