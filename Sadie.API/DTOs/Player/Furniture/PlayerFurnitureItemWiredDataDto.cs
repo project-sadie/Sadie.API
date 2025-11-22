@@ -2,7 +2,10 @@ namespace Sadie.API.DTOs.Player.Furniture;
 
 public record PlayerFurnitureItemWiredDataDto
 {
-    public string Message { get; init; } = string.Empty;
+    public int Id { get; init; }
+    public required int PlayerFurnitureItemPlacementDataId { get; init; }
+    public required PlayerFurnitureItemPlacementDataDto PlacementData { get; init; }
+    public ICollection<PlayerFurnitureItemPlacementDataDto> SelectedItems { get; init; } = [];
+    public required string Message { get; init; }
     public int Delay { get; init; }
-    public List<int> SelectedItemIds { get; init; } = [];
 }
