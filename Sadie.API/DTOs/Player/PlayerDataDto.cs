@@ -2,6 +2,8 @@ namespace Sadie.API.DTOs.Player;
 
 public record PlayerDataDto
 {
+    public long PlayerId { get; init; }
+    public int? HomeRoomId { get; set; }
     public int CreditBalance { get; init; }
     public int PixelBalance { get; init; }
     public int SeasonalBalance { get; init; }
