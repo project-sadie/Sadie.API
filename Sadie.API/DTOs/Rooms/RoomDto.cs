@@ -10,6 +10,7 @@ public record RoomDto
     public string Name { get; set; } = string.Empty;
     public int LayoutId { get; set; }
     public long OwnerId { get; set; }
+    public PlayerDto? Owner { get; set; }
     public int MaxUsersAllowed { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool IsMuted { get; set; }
