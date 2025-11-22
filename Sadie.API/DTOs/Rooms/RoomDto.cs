@@ -1,3 +1,4 @@
+using Sadie.API.DTOs.Player;
 using Sadie.API.DTOs.Rooms.Chat;
 using Sadie.API.DTOs.Rooms.Rights;
 
@@ -18,6 +19,8 @@ public record RoomDto
     public RoomChatSettingsDto? ChatSettings { get; set; }
     public ICollection<RoomPlayerRightDto> PlayerRights { get; init; } = [];
     public ICollection<RoomChatMessageDto> ChatMessages { get; init; } = [];
+    public ICollection<RoomTagDto> Tags { get; init; } = [];
+    public ICollection<PlayerRoomLikeDto> PlayerLikes { get; init; } = [];
     public RoomDimmerSettingsDto? DimmerSettings { get; set; }
     public GroupDto? Group { get; set; }
 }
