@@ -1,3 +1,5 @@
+using Sadie.API.DTOs.Catalog.Items;
+
 namespace Sadie.API.DTOs.Catalog.Pages;
 
 public record CatalogPageDto
@@ -14,6 +16,6 @@ public record CatalogPageDto
     public bool Visible { get; init; }
     public List<string> ImagesJson { get; init; } = [];
     public List<string> TextsJson { get; init; } = [];
-    public List<int> PageIds { get; init; } = [];
-    public List<int> ItemIds { get; init; } = [];
+    public ICollection<CatalogPageDto> Pages { get; init; } = [];
+    public ICollection<CatalogItemDto> Items { get; init; } = [];
 }

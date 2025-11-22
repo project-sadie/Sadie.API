@@ -4,7 +4,7 @@ using Sadie.Core.Enums.Game.Furniture;
 
 namespace Sadie.API.DTOs.Furniture;
 
-public class FurnitureItemDto
+public record FurnitureItemDto
 {
     public int Id { get; init; }
     public required string Name { get; init; }
