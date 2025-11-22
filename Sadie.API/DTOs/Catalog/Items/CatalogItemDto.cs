@@ -2,7 +2,7 @@ using Sadie.API.DTOs.Furniture;
 
 namespace Sadie.API.DTOs.Catalog.Items;
 
-public class CatalogItemDto
+public record CatalogItemDto
 {
     public int Id { get; init; }
     public string? Name { get; init; }

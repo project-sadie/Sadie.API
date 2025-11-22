@@ -5,7 +5,7 @@ using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.DTOs.Rooms.Chat;
 
-public class RoomChatMessageDto
+public record RoomChatMessageDto
 {
     public int Id { get; init; }
     public int RoomId { get; init; }

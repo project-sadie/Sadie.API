@@ -1,6 +1,6 @@
 namespace Sadie.API.DTOs.Rooms.Rights;
 
-public class RoomPlayerRightDto
+public record RoomPlayerRightDto
 {
     public int Id { get; init; }
     public int RoomId { get; init; }
