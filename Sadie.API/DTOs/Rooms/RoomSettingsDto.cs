@@ -18,5 +18,5 @@ public record RoomSettingsDto
     public int WallThickness { get; set; }
     public int FloorThickness { get; set; }
     public bool CanUsersOverlap { get; set; }
-    public string TradeOption { get; set; } = string.Empty;
+    public RoomTradeOption TradeOption { get; set; }
 }
