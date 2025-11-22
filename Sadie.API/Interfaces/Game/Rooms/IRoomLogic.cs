@@ -4,7 +4,7 @@ using Sadie.API.Interfaces.Game.Rooms.Users;
 
 namespace Sadie.API.Interfaces.Game.Rooms;
 
-public interface IRoomLogic : IAsyncDisposable
+public interface IRoomLogic : IRoom, IAsyncDisposable
 {
     IRoomTileMap TileMap { get; }
     IRoomUserRepository UserRepository { get; }
