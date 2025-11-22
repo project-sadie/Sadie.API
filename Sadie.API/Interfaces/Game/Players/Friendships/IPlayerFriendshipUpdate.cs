@@ -1,4 +1,5 @@
 using Sadie.API.DTOs.Player;
+using Sadie.Core.Enums.Game.Players;
 
 namespace Sadie.API.Interfaces.Game.Players.Friendships;
 
@@ -8,5 +9,5 @@ public interface IPlayerFriendshipUpdate
     IFriendData? Friend { get; init; }
     bool FriendOnline { get; init; }
     bool FriendInRoom { get; init; }
-    PlayerRelationshipTypeDto Relation { get; init; }
+    PlayerRelationshipType Relation { get; init; }
 }
