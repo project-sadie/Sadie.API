@@ -1,3 +1,5 @@
+using Sadie.API.DTOs.Rooms;
+
 namespace Sadie.API.DTOs.Player;
 
 public record PlayerDto
@@ -17,6 +19,9 @@ public record PlayerDto
     public PlayerGameSettingsDto? GameSettings { get; init; }
     public ICollection<PlayerFriendshipDto> OutgoingFriendships { get; init; } = [];
     public ICollection<PlayerFriendshipDto> IncomingFriendships { get; init; } = [];
+    public ICollection<RoomDto> Rooms { get; set; } = [];
+    public ICollection<PlayerIgnoreDto> Ignores { get; set; } = [];
+    public ICollection<PlayerRoomVisitDto> RoomVisits { get; init; } = [];
     public ICollection<PlayerBanDto> Bans { get; init; } = [];
     public ICollection<PlayerSsoTokenDto> Tokens { get; init; } = [];
 }
