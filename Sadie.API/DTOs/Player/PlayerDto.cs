@@ -1,27 +1,30 @@
+using Sadie.API.DTOs.Player.Furniture;
 using Sadie.API.DTOs.Rooms;
+using Sadie.API.DTOs.Server;
 
 namespace Sadie.API.DTOs.Player;
 
-public record PlayerDto
-{
-    public long Id { get; init; }
-    public required string Username { get; init; }
-    public required string Email { get; init; }
-    public List<RoleDto> Roles { get; init; } = [];
-    public DateTimeOffset CreatedAt { get; init; }
-    public PlayerDataDto? Data { get; init; }
-    public PlayerAvatarDataDto? AvatarData { get; init; }
-    public List<PlayerTagDto> Tags { get; init; } = [];
-    public ICollection<PlayerRelationshipDto> Relationships { get; init; } = [];
-    public PlayerNavigatorSettingsDto? NavigatorSettings { get; init; }
-    public List<PlayerBadgeDto> Badges { get; init; } = [];
-    public List<PlayerSubscriptionDto> Subscriptions { get; init; } = [];
-    public PlayerGameSettingsDto? GameSettings { get; init; }
-    public ICollection<PlayerFriendshipDto> OutgoingFriendships { get; init; } = [];
-    public ICollection<PlayerFriendshipDto> IncomingFriendships { get; init; } = [];
-    public ICollection<RoomDto> Rooms { get; set; } = [];
-    public ICollection<PlayerIgnoreDto> Ignores { get; set; } = [];
-    public ICollection<PlayerRoomVisitDto> RoomVisits { get; init; } = [];
-    public ICollection<PlayerBanDto> Bans { get; init; } = [];
-    public ICollection<PlayerSsoTokenDto> Tokens { get; init; } = [];
-}
+public record PlayerDto(
+    long Id,
+    string Username,
+    string Email,
+    List<RoleDto> Roles,
+    DateTimeOffset CreatedAt,
+    PlayerDataDto? Data,
+    PlayerAvatarDataDto? AvatarData,
+    List<PlayerTagDto> Tags,
+    ICollection<PlayerRelationshipDto> Relationships,
+    PlayerNavigatorSettingsDto? NavigatorSettings,
+    PlayerGameSettingsDto? GameSettings,
+    List<PlayerBadgeDto> Badges,
+    ICollection<PlayerFurnitureItemDto> FurnitureItems,
+    List<PlayerSubscriptionDto> Subscriptions,
+    ICollection<PlayerFriendshipDto> OutgoingFriendships,
+    ICollection<PlayerFriendshipDto> IncomingFriendships,
+    ICollection<ServerPeriodicCurrencyRewardLogDto> RewardLogs,
+    ICollection<RoomDto> Rooms,
+    ICollection<PlayerIgnoreDto> Ignores,
+    ICollection<PlayerRoomVisitDto> RoomVisits,
+    ICollection<PlayerBanDto> Bans,
+    ICollection<PlayerSsoTokenDto> Tokens
+);
