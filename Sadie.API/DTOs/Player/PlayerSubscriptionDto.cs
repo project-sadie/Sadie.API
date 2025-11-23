@@ -2,6 +2,8 @@ namespace Sadie.API.DTOs.Player;
 
 public record PlayerSubscriptionDto
 {
+    public int Id { get; init; }
+    public long PlayerId { get; init; }
     public PlayerDto? Player { get; init; }
     public int SubscriptionId { get; init; }
     public SubscriptionDto? Subscription { get; init; }
