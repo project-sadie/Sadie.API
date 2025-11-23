@@ -6,6 +6,7 @@ public record PlayerFurnitureItemDto
 {
     public int Id { get; init; }
     public long PlayerId { get; set; }
+    public required PlayerDto Player { get; set; }
     public required FurnitureItemDto FurnitureItem { get; init; }
     public PlayerFurnitureItemPlacementDataDto? PlacementData { get; set; }
     public required string LimitedData { get; init; }

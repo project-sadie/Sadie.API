@@ -6,7 +6,7 @@ using Sadie.API.Interfaces.Game.Rooms;
 
 namespace Sadie.API.DTOs.Rooms;
 
-public record RoomDto : IRoom
+public record RoomDto
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

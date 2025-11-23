@@ -9,14 +9,14 @@ namespace Sadie.API.Interfaces.Game.Rooms.Mapping;
 
 public interface IRoomTileMapHelperService
 {
-    HDirection GetOppositeDirection(int direction);
+    HDirection GetOppositeDirection(HDirection direction);
 
     List<Point> GetPointsForPlacement(
         int x, 
         int y, 
         int width, 
         int length, 
-        int direction);
+        HDirection direction);
 
     RoomTileState GetTileState(
         int x, 
