@@ -5,8 +5,8 @@ namespace Sadie.API.DTOs.Player;
 
 public record PlayerAvatarDataDto
 {
-    public string FigureCode { get; init; } = string.Empty;
+    public string? FigureCode { get; set; }
     public string? Motto { get; init; }
-    public PlayerAvatarGender Gender { get; init; }
+    public PlayerAvatarGender Gender { get; set; }
     public ChatBubble ChatBubbleId { get; init; }
 }
