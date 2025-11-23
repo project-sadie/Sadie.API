@@ -4,9 +4,9 @@ public record RoomChatSettingsDto
 {
     public int Id { get; init; }
     public int RoomId { get; init; }
-    public int ChatType { get; init; }
-    public int ChatWeight { get; init; }
-    public int ChatSpeed { get; init; }
-    public int ChatDistance { get; init; }
-    public int ChatProtection { get; init; }
+    public int ChatType { get; set; }
+    public int ChatWeight { get; set; }
+    public int ChatSpeed { get; set; }
+    public int ChatDistance { get; set; }
+    public int ChatProtection { get; set; }
 }

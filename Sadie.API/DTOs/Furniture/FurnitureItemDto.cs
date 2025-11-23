@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using Sadie.API.DTOs.Catalog.Items;
 using Sadie.Core.Enums.Game.Furniture;
 

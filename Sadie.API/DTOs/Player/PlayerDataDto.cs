@@ -7,8 +7,8 @@ public record PlayerDataDto
     public int CreditBalance { get; set; }
     public int PixelBalance { get; set; }
     public int SeasonalBalance { get; set; }
-    public int GotwPoints { get; init; }
-    public int RespectPoints { get; init; }
+    public int GotwPoints { get; set; }
+    public int RespectPoints { get; set; }
     public int RespectPointsPet { get; init; }
     public int AchievementScore { get; init; }
     public bool AllowFriendRequests { get; init; }
