@@ -8,5 +8,5 @@ public record PlayerAvatarDataDto
     public string? FigureCode { get; set; }
     public string? Motto { get; init; }
     public PlayerAvatarGender Gender { get; set; }
-    public ChatBubble ChatBubbleId { get; init; }
+    public ChatBubble ChatBubbleId { get; set; }
 }

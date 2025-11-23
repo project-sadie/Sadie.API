@@ -7,5 +7,5 @@ public record PlayerRelationshipDto
     public PlayerDto? OriginPlayer { get; init; }
     public long TargetPlayerId { get; init; }
     public PlayerDto? TargetPlayer { get; init; }
-    public int TypeId { get; init; }
+    public int TypeId { get; set; }
 }

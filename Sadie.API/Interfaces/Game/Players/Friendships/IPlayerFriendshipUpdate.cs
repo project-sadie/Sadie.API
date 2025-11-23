@@ -1,4 +1,3 @@
-using Sadie.API.DTOs.Player;
 using Sadie.Core.Enums.Game.Players;
 
 namespace Sadie.API.Interfaces.Game.Players.Friendships;
