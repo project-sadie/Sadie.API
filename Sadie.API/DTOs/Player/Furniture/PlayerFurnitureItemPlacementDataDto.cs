@@ -1,3 +1,4 @@
+using Sadie.API.DTOs.Furniture;
 using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.DTOs.Player.Furniture;
@@ -12,7 +13,7 @@ public record PlayerFurnitureItemPlacementDataDto
     public int PositionY { get; set; }
     public double PositionZ { get; set; }
     public string? WallPosition { get; init; }
-    public HDirection Direction { get; init; }
+    public HDirection Direction { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
     public PlayerFurnitureItemWiredDataDto? WiredData { get; init; }
 }
