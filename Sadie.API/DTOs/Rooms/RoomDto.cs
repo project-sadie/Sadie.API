@@ -12,7 +12,6 @@ public record RoomDto
     public int LayoutId { get; set; }
     public RoomLayoutDto? Layout { get; set; }
     public long OwnerId { get; set; }
-    public PlayerDto? Owner { get; set; }
     public int MaxUsersAllowed { get; set; }
     public string Description { get; set; } = string.Empty;
     public bool IsMuted { get; set; }
