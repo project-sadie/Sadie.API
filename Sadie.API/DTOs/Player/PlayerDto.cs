@@ -13,6 +13,7 @@ public record PlayerDto(
     PlayerDataDto? Data,
     PlayerAvatarDataDto? AvatarData,
     List<PlayerTagDto> Tags,
+    ICollection<PlayerRoomLikeDto> RoomLikes,
     ICollection<PlayerRelationshipDto> Relationships,
     PlayerNavigatorSettingsDto? NavigatorSettings,
     PlayerGameSettingsDto? GameSettings,
