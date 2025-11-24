@@ -16,7 +16,7 @@ public abstract class AbstractPacketWriter
     {
     }
 
-    public virtual void OnSerialize(INetworkPacketWriter writer)
+    public virtual async Task OnSerializeAsync(INetworkPacketWriter writer)
     {
     }
 
