@@ -1,6 +1,6 @@
 namespace Sadie.API.Interfaces.Plugins;
 
-public interface IPluginBootstrapper
+public interface IPluginContext : IAsyncDisposable
 {
     Task BootstrapAsync();
 }

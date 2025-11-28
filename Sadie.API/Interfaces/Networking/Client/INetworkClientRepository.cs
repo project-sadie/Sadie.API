@@ -8,4 +8,5 @@ public interface INetworkClientRepository : IAsyncDisposable
     Task<bool> TryRemoveAsync(IChannelId channelId);
     Task DisconnectIdleClientsAsync();
     INetworkClient? TryGetClientByChannelId(IChannelId channelId);
+    ICollection<INetworkClient> Clients { get; }
 }
