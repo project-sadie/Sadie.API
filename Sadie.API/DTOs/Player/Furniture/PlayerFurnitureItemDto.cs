@@ -1,8 +1,9 @@
+using System;
 using Sadie.API.DTOs.Furniture;
 
 namespace Sadie.API.DTOs.Player.Furniture;
 
-public record PlayerFurnitureItemDto
+public class PlayerFurnitureItemDto
 {
     public int Id { get; init; }
     public long PlayerId { get; set; }

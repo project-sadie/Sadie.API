@@ -1,8 +1,9 @@
+using System;
 using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.DTOs.Player.Furniture;
 
-public record PlayerFurnitureItemPlacementDataDto
+public class PlayerFurnitureItemPlacementDataDto
 {
     public int Id { get; init; }
     public int PlayerFurnitureItemId { get; init; }
