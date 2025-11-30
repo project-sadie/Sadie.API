@@ -1,4 +1,3 @@
-using System;
 using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.DTOs.Player.Furniture;
