@@ -1,4 +1,3 @@
-using System;
 using Sadie.API.DTOs.Furniture;
 
 namespace Sadie.API.DTOs.Player.Furniture;
