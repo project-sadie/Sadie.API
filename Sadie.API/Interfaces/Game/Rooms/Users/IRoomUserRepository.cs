@@ -11,4 +11,5 @@ public interface IRoomUserRepository : IAsyncDisposable
     ICollection<IRoomUser> GetAllWithRights();
     Task RunPeriodicCheckAsync();
     void SetRoom(IRoomLogic room);
+    DateTime? NoUsersSince { get; set; }
 }
