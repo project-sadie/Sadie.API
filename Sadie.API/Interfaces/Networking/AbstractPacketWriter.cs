@@ -12,11 +12,11 @@ public abstract class AbstractPacketWriter
     public Dictionary<PropertyInfo, Action<INetworkPacketWriter>> AfterRulesSerialize { get; } = new();
     public Dictionary<PropertyInfo, KeyValuePair<Type, Func<object, object>>> ConversionRules { get; } = new();
 
-    public virtual async Task OnConfigureRulesAsync()
+    public virtual void OnConfigureRules()
     {
     }
 
-    public virtual async Task OnSerializeAsync(INetworkPacketWriter writer)
+    public virtual void OnSerialize(INetworkPacketWriter writer)
     {
     }
 

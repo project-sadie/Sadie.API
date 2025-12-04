@@ -15,5 +15,4 @@ public interface INetworkClient : IAsyncDisposable, INetworkObject
     void EnableEncryption(byte[] sharedKey);
     DateTime LastPing { get; set; }
     DateTime LastPong { get; set; }
-    Channel<INetworkPacket> IncomingPackets { get; }
 }
