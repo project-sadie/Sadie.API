@@ -1,8 +1,9 @@
-using DotNetty.Transport.Channels;
+using System.Net;
+using System.Net.WebSockets;
 
 namespace Sadie.API.Interfaces.Networking.Client;
 
 public interface INetworkClientFactory
 {
-    INetworkClient CreateClient(IChannel channel);
+    INetworkClient CreateClient(IPAddress ipAddress, Guid guid, WebSocket channel);
 }

@@ -13,7 +13,6 @@ public interface IRoomLogic : IAsyncDisposable
     IRoomTileMap TileMap { get; }
     IRoomUserRepository UserRepository { get; }
     IRoomBotRepository BotRepository { get; }
-    IChannelGroup ChannelGroup { get; set; }
     Task BroadcastDataAsync(AbstractPacketWriter writer, IReadOnlyCollection<long>? excludedIds = null);
     ValueTask DisposeAsync();
 }

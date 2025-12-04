@@ -13,7 +13,6 @@ public interface IPlayerLogic
     PlayerFriendshipDto? TryGetFriendshipFor(long targetId);
     void DeleteFriendshipFor(long targetId);
     bool HasPermission(string name);
-    IChannel? Channel { get; set; }
     INetworkObject? NetworkObject { get; set; }
     IPlayerState State { get; }
     bool Authenticated { get; set; }

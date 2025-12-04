@@ -8,7 +8,6 @@ namespace Sadie.API.Interfaces.Networking.Client;
 
 public interface INetworkClient : IAsyncDisposable, INetworkObject
 {
-    IChannel Channel { get; set; }
     IPlayerLogic? Player { get; set; }
     IRoomUser? RoomUser { get; set; }
     bool EncryptionEnabled { get; }

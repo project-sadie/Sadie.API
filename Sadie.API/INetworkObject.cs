@@ -1,4 +1,6 @@
-﻿using DotNetty.Transport.Channels;
+﻿using System.Net;
+using System.Net.WebSockets;
+using DotNetty.Transport.Channels;
 using Sadie.API.Interfaces.Networking;
 
 namespace Sadie.API;
@@ -8,5 +10,7 @@ public interface INetworkObject
     Task WriteToStreamAsync(AbstractPacketWriter writer);
     Task WriteToStreamAsync(INetworkPacketWriter writer);
     List<INetworkPacketWriter> Outbox { get; set; }
-    IChannel Channel { get; set; } 
+    IPAddress IpAddress { get; set; } 
+    Guid Guid { get; set; } 
+    WebSocket WebSocket { get; set; } 
 }
