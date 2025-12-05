@@ -1,4 +1,4 @@
-using Sadie.API.DTOs.Player;
+using Sadie.API.DTOs.Players;
 using Sadie.Core.Enums.Game.Rooms;
 using Sadie.Core.Enums.Game.Rooms.Users;
 using Sadie.Core.Enums.Miscellaneous;

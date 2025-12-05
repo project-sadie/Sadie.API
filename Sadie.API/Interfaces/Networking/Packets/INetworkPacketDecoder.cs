@@ -2,5 +2,5 @@ namespace Sadie.API.Interfaces.Networking.Packets;
 
 public interface INetworkPacketDecoder
 {
-    INetworkPacket? Decode(Guid guid, ReadOnlySpan<byte> data);
+    INetworkPacket Decode(Guid guid, byte[] buffer, int length);
 }

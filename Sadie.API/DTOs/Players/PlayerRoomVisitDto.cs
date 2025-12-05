@@ -1,4 +1,4 @@
-namespace Sadie.API.DTOs.Player;
+namespace Sadie.API.DTOs.Players;
 
 public record PlayerRoomVisitDto
 {

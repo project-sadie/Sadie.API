@@ -1,6 +1,6 @@
 using Sadie.Core.Enums.Miscellaneous;
 
-namespace Sadie.API.DTOs.Player.Furniture;
+namespace Sadie.API.DTOs.Players.Furniture;
 
 public class PlayerFurnitureItemPlacementDataDto
 {

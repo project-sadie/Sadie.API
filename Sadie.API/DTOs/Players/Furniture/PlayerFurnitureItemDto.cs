@@ -1,6 +1,6 @@
 using Sadie.API.DTOs.Furniture;
 
-namespace Sadie.API.DTOs.Player.Furniture;
+namespace Sadie.API.DTOs.Players.Furniture;
 
 public class PlayerFurnitureItemDto
 {

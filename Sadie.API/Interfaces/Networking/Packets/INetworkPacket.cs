@@ -3,5 +3,5 @@
 public interface INetworkPacket
 {
     short PacketId { get; }
-    byte[] Data { get; }
+    ReadOnlyMemory<byte> Data { get; }
 }

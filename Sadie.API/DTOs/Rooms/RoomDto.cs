@@ -1,5 +1,5 @@
-using Sadie.API.DTOs.Player;
-using Sadie.API.DTOs.Player.Furniture;
+using Sadie.API.DTOs.Players;
+using Sadie.API.DTOs.Players.Furniture;
 using Sadie.API.DTOs.Rooms.Chat;
 using Sadie.API.DTOs.Rooms.Rights;
 
@@ -26,5 +26,5 @@ public record RoomDto
     public ICollection<PlayerFurnitureItemPlacementDataDto> FurnitureItems { get; init; } = [];
     public GroupDto? Group { get; init; }
     public RoomDimmerSettingsDto? DimmerSettings { get; set; }
-    public ICollection<PlayerBanDto> PlayerBans { get; set; } = [];
+    public ICollection<PlayerRoomBanDto> PlayerBans { get; set; } = [];
 }

@@ -1,8 +1,8 @@
-using Sadie.API.DTOs.Player.Furniture;
+using Sadie.API.DTOs.Players.Furniture;
 using Sadie.API.DTOs.Rooms;
 using Sadie.API.DTOs.Server;
 
-namespace Sadie.API.DTOs.Player;
+namespace Sadie.API.DTOs.Players;
 
 public record PlayerDto(
     long Id,

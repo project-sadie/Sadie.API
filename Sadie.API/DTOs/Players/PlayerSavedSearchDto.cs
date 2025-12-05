@@ -1,6 +1,6 @@
 using Sadie.Core.Shared.Attributes;
 
-namespace Sadie.API.DTOs.Player;
+namespace Sadie.API.DTOs.Players;
 
 public record PlayerSavedSearchDto
 {

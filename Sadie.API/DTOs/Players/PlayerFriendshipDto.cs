@@ -1,6 +1,6 @@
 using Sadie.Core.Enums.Game.Players;
 
-namespace Sadie.API.DTOs.Player;
+namespace Sadie.API.DTOs.Players;
 
 public record PlayerFriendshipDto
 {
