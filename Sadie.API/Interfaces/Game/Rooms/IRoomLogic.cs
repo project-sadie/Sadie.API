@@ -2,6 +2,7 @@ using DotNetty.Transport.Channels.Groups;
 using Sadie.API.DTOs.Rooms;
 using Sadie.API.Interfaces.Game.Rooms.Bots;
 using Sadie.API.Interfaces.Game.Rooms.Mapping;
+using Sadie.API.Interfaces.Game.Rooms.Pathfinding;
 using Sadie.API.Interfaces.Game.Rooms.Users;
 using Sadie.API.Interfaces.Networking;
 
@@ -11,6 +12,7 @@ public interface IRoomLogic : IAsyncDisposable
 {
     RoomDto Room { get; }
     IRoomTileMap TileMap { get; }
+    IRoomPathFinder PathFinder { get; }
     IRoomUserRepository UserRepository { get; }
     IRoomBotRepository BotRepository { get; }
     Task BroadcastDataAsync(AbstractPacketWriter writer, IReadOnlyCollection<long>? excludedIds = null);

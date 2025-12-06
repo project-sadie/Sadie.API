@@ -16,5 +16,5 @@ public interface IPlayerRepository
     Task<List<PlayerDto>> GetPlayersForSearchAsync(string searchQuery, long[] excludeIds);
     Task<List<PlayerRelationshipDto>> GetRelationshipsForPlayerAsync(long playerId);
     Task BroadcastDataAsync(AbstractPacketWriter writer);
-    Task<string> GetPlayerUsernameByIdAsync(long playerId);
+    Task<string?> GetPlayerUsernameByIdAsync(long playerId);
 }
