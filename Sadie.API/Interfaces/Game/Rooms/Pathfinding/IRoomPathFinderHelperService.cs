@@ -11,6 +11,5 @@ public interface IRoomPathFinderHelperService
     List<Point> BuildPathForWalk(IRoomLogic room,
         Point start,
         Point end,
-        bool useDiagonal,
         List<Point> overridePoints);
 }
