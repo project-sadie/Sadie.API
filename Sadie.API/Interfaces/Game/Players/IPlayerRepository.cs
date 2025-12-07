@@ -1,4 +1,4 @@
-using Sadie.API.DTOs.Player;
+using Sadie.API.DTOs.Players;
 using Sadie.API.Interfaces.Networking;
 
 namespace Sadie.API.Interfaces.Game.Players;
@@ -16,4 +16,5 @@ public interface IPlayerRepository
     Task<List<PlayerDto>> GetPlayersForSearchAsync(string searchQuery, long[] excludeIds);
     Task<List<PlayerRelationshipDto>> GetRelationshipsForPlayerAsync(long playerId);
     Task BroadcastDataAsync(AbstractPacketWriter writer);
+    Task<string?> GetPlayerUsernameByIdAsync(long playerId);
 }

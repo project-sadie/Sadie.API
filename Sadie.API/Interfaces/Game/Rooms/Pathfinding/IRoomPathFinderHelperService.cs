@@ -8,9 +8,8 @@ public interface IRoomPathFinderHelperService
 {
     HDirection GetDirectionForNextStep(Point current, Point next);
 
-    List<Point> BuildPathForWalk(IRoomTileMap tileMap,
+    List<Point> BuildPathForWalk(IRoomLogic room,
         Point start,
         Point end,
-        bool useDiagonal,
         List<Point> overridePoints);
 }

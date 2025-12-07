@@ -1,4 +1,4 @@
-using Sadie.API.DTOs.Player;
+using Sadie.API.DTOs.Players;
 using Sadie.API.Interfaces.Game.Rooms.Unit;
 
 namespace Sadie.API.Interfaces.Game.Rooms.Bots;

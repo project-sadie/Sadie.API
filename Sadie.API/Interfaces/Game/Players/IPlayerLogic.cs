@@ -1,5 +1,5 @@
 using DotNetty.Transport.Channels;
-using Sadie.API.DTOs.Player;
+using Sadie.API.DTOs.Players;
 
 namespace Sadie.API.Interfaces.Game.Players;
 
@@ -13,7 +13,6 @@ public interface IPlayerLogic
     PlayerFriendshipDto? TryGetFriendshipFor(long targetId);
     void DeleteFriendshipFor(long targetId);
     bool HasPermission(string name);
-    IChannel? Channel { get; set; }
     INetworkObject? NetworkObject { get; set; }
     IPlayerState State { get; }
     bool Authenticated { get; set; }

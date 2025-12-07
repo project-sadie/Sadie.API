@@ -1,6 +1,7 @@
 ﻿namespace Sadie.API.Interfaces.Networking.Packets;
 
-public interface INetworkPacket : INetworkPacketReader
+public interface INetworkPacket
 {
     short PacketId { get; }
+    ReadOnlyMemory<byte> Data { get; }
 }

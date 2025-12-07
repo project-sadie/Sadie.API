@@ -1,4 +1,4 @@
-using Sadie.API.DTOs.Player.Furniture;
+using Sadie.API.DTOs.Players.Furniture;
 
 namespace Sadie.API.Interfaces.Game.Players;
 

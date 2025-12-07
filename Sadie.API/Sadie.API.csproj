@@ -4,7 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <Version>5.3.2</Version>
+        <Version>5.8.3</Version>
         <IsPackable>true</IsPackable>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <LangVersion>14</LangVersion>
@@ -13,9 +13,5 @@
     <ItemGroup>
         <PackageReference Include="DotNetty.Transport" Version="0.7.6" />
         <PackageReference Include="Sadie.Core" Version="1.0.0" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Interfaces\" />
     </ItemGroup>
 </Project>

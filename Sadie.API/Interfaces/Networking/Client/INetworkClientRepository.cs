@@ -4,9 +4,9 @@ namespace Sadie.API.Interfaces.Networking.Client;
 
 public interface INetworkClientRepository : IAsyncDisposable
 {
-    void AddClient(IChannelId channelId, INetworkClient client);
-    Task<bool> TryRemoveAsync(IChannelId channelId);
+    void AddClient(Guid guid, INetworkClient client);
+    Task<bool> TryRemoveAsync(Guid guid);
     Task DisconnectIdleClientsAsync();
-    INetworkClient? TryGetClientByChannelId(IChannelId channelId);
+    INetworkClient? TryGetClientByGuid(Guid guid);
     ICollection<INetworkClient> Clients { get; }
 }
