@@ -1,5 +1,4 @@
 using System.Drawing;
-using Sadie.API.Interfaces.Game.Rooms.Mapping;
 using Sadie.Core.Enums.Miscellaneous;
 
 namespace Sadie.API.Interfaces.Game.Rooms.Pathfinding;

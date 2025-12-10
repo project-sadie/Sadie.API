@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.WebSockets;
-using DotNetty.Transport.Channels;
 using Sadie.API.Interfaces.Networking;
 
 namespace Sadie.API;

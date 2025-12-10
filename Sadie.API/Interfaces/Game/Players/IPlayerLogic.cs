@@ -1,4 +1,3 @@
-using DotNetty.Transport.Channels;
 using Sadie.API.DTOs.Players;
 
 namespace Sadie.API.Interfaces.Game.Players;

@@ -1,5 +1,3 @@
-using DotNetty.Transport.Channels;
-
 namespace Sadie.API.Interfaces.Networking.Client;
 
 public interface INetworkClientRepository : IAsyncDisposable
