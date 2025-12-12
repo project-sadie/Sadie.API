@@ -7,7 +7,7 @@ public interface IRoomUserTrade
 {
     List<IRoomUser> Users { get; init; }
     List<PlayerFurnitureItemDto> Items { get; init; }
-    void OfferItems(List<PlayerFurnitureItemDto> playerItems);
+    Task OfferItemsAsync(List<PlayerFurnitureItemDto> playerItems);
     Task BroadcastToUsersAsync(AbstractPacketWriter writer);
     Task SwapItemsAsync();
     void RemoveOfferedItem(PlayerFurnitureItemDto item);
