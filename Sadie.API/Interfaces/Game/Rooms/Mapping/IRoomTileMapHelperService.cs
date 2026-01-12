@@ -39,6 +39,7 @@ public interface IRoomTileMapHelperService
     bool CanPlaceAt(
         IEnumerable<Point> points,  
         IRoomTileMap tileMap,
+        ICollection<PlayerFurnitureItemPlacementDataDto> furnitureItems,
         bool checkForUsers = true);
 
     List<IRoomUser> GetUsersAtPoints(IEnumerable<Point> points, IEnumerable<IRoomUser> users);
